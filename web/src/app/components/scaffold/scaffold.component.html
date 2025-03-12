@@ -1,0 +1,22 @@
+<div class="container" *ngIf="(items$ | async) as items">
+    <div class="row">
+        <div *ngFor="let item of ['#', 'event', 'from', 'to', 'payload']">{{ item }}</div>
+    </div>
+    <div class="row" *ngFor="let item of items; let i = index">
+        <div>
+            {{ i + 1 }}
+        </div>
+        <div>
+            {{ item.event }}
+        </div>
+        <div>
+            {{ item.from }}
+        </div>
+        <div>
+            {{ item.to }}
+        </div>
+        <div>
+            {{ item.payload | json }}
+        </div>
+    </div>
+</div>

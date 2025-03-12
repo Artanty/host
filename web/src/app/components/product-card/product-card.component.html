@@ -1,0 +1,15 @@
+<a class="card"
+  [routerLink]="routerPath"
+  [routerLinkActive]="'active'"
+  [routerLinkActiveOptions]="routerLinkActiveOptions"
+  (click)="onButtonClick()"
+>
+  <figure class="card__image">
+    <img [src]="imgSrcBaseUrl + '/assets/images/product-btn-img.jpg'" alt="Short description" />
+    <div class="overlay"></div>
+  </figure>
+  <div class="card__body">
+    <h3 class="card__name" [title]="title">{{ visibleName }}</h3>
+  </div>
+</a>
+  

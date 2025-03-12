@@ -1,0 +1,44 @@
+<div class="scaffold hidde">
+  <a [routerLink]="['/faq/ticket', 1]">{{ 'id 1' }}</a>
+  {{ ' | '}}
+  <a [routerLink]="['/faq/ticket']">{{ 'oldest' }}</a>
+  {{ ' | '}}
+  <a [routerLink]="['/faq']">{{ 'faq' }}</a>
+  {{ ' | '}}
+  <a [routerLink]="['/faq/ticket-create']">{{ 'create' }}</a>
+  {{ ' | '}}
+  <a [routerLink]="['/test']">{{ 'test' }}</a>
+  {{ ' | '}}
+  <a (click)="check()">{{ 'check' }}</a>
+  {{ ' | '}}
+  <a (click)="tick()">{{ 'tick' }}</a>
+  {{ ' | '}}
+  <a (click)="send2au()">{{ 'send2au' }}</a>
+</div>
+<div class="host-container">
+  <div class="routerDiv">
+    <router-outlet></router-outlet>
+  </div>
+  
+  <div *ngIf="!isHomeRoute()" class="productNavContainer" #productNavContainer appGroupButtons>
+  </div>
+  
+  <div class="mainButtons" [class.wide]="isHomeRoute()">
+    @if (productMainButtons.length) {
+      @for (item of productMainButtons; track item) {
+        <app-product-card [ngClass]="item.buttonState"
+          [name]="item.buttonName"
+          [title]="item.buttonTitle"
+          [imgSrcBaseUrl]="item.imgSrcBaseUrl"
+          [routerPath]="item.routerPath"
+        ></app-product-card>
+      }
+    }
+    <div class="cont">
+      <i class="homeBtn mu mu-home" (click)="goHome()"></i>
+    </div>  
+  </div>
+</div>
+
+<app-scaffold></app-scaffold>
+

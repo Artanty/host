@@ -1,0 +1,9 @@
+.row {
+    padding-top: 16px;
+    padding-left: 16px;
+    display: grid;
+    grid-template-columns: 20px 250px 150px 150px  1fr;
+    & > div:nth-child(5n) {
+        color:red;
+    }
+}

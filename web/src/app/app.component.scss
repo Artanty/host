@@ -1,0 +1,84 @@
+@import 'microns/fonts/microns.css';
+
+.host-container {
+  overflow: hidden;
+  width: 700px;
+  height: 550px;
+  background: #24C6DC;
+  background: -webkit-linear-gradient(to bottom right, #7071df, #32c5da);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #7071df, #32c5da); /* Standard syntax */
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  transition: 0.3s all;
+  z-index: 1;
+  column-gap: 16px;
+}
+
+.mainButtons {
+  width: 90px;
+  transition: 0.3s width;
+  &.wide {
+    width: 260px;
+  }
+  & > * {
+    display: block;
+    // max-height: 160px;
+    // height: 160px;
+  }
+  & > *:not(:first-child) {
+    margin-top: 8px;
+  }
+}
+
+.homeBtn {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  font-size: 100px;
+  color: rgba(255, 255, 255, 0.431);
+  cursor: pointer;
+  transition: 0.4s color;
+  &:hover {
+    color: rgba(255, 255, 255, 1);
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+h3 {
+  color:#fff;
+}
+
+body {
+  position: relative;
+}
+
+.scaffold {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.productNavContainer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  max-height: fit-content;
+  background: rgb(6 0 212 / 19%);
+  padding: 8px;
+  border-radius: 9px;
+}
+
+.routerDiv {
+  width: 400px;
+}
+
+.group {
+  display: flex;
+  column-gap: 6px;
+}
