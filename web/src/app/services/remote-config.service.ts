@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
-import { filter, firstValueFrom, forkJoin, Observable, of, switchMap, take } from "rxjs";
+import { catchError, EMPTY, filter, finalize, firstValueFrom, forkJoin, Observable, of, switchMap, take, tap } from "rxjs";
 import { RemoteBody, Remotes } from "../app.component.types";
 import { EVENT_BUS_LISTENER, BusEvent, EVENT_BUS, EVENT_BUS_PUSHER } from "typlib";
 
@@ -30,15 +30,26 @@ export class RemoteConfigService {
             switchMap((res: any) => {
                 if (res['event_bus_hooks']) {
                     res['event_bus_hooks'].forEach((el: any) => {
-                        this._createEventHook(projectId, el.trigger, el.action, el.lives)
+                        this._createEventHook(
+                            projectId, 
+                            el.trigger, 
+                            el.action, 
+                            el.lives
+                        )
                     })
                 }
-                return of(1)
-            })
+                return of(`${projectId}'s switchMap returns this to trigger forkJoin`)
+            }),
+            
         )
     }
 
-    _createEventHook (projectId: string, trigger: any, action: string, lives: string) {
+    _createEventHook (
+        projectId: string, 
+        trigger: any, 
+        action: string, 
+        lives: string
+    ): void {
         let obs$ = this.eventBusListener$
         .pipe(
             filter((res: BusEvent) => {
@@ -76,7 +87,9 @@ export class RemoteConfigService {
      * @returns 
      */
     getRemoteConfig(remotes: Remotes, projectId: string): Observable<any> {
-        return this.http.get(`${remotes[projectId].url}/assets/configs/remote.json`);
+        return this.http.get(`${remotes[projectId].url}/assets/configs/remote.json`).pipe(
+            catchError(() => of(`${projectId}'s http catchError returns this to trigger forkJoin`)) 
+        );
     }
 
     

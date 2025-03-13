@@ -15,6 +15,7 @@ import { ProductCardComponent } from './components/product-card/product-card.com
 import { BusEventStoreService } from "./services/bus-event-store.service"
 import { authInterceptor } from "./interceptors/auth.interceptor";
 import { ScaffoldComponent } from './components/scaffold/scaffold.component';
+import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy"
 
 export const initBusEvent: BusEvent = {
   event: "ADD_REMOTES",
@@ -42,6 +43,7 @@ export const eventBus$ = new BehaviorSubject(initBusEvent)
     // HttpClientModule,
   ],
   providers: [
+    CustomPreloadingStrategy,
     { provide: EVENT_BUS, useValue: eventBus$ },
     {
       provide: EVENT_BUS_LISTENER,
@@ -85,7 +87,7 @@ export class AppModule {
     // this.eventBus$.
     eventBus$.asObservable().subscribe(res => {
       // console.log(res)
-      console.log('MAIN HOST EVENT: ' + res.event)
+      // console.log('MAIN HOST EVENT: ' + res.event)
       // bus.next([...bus.getValue(), res])
     })
   }

@@ -22,6 +22,8 @@ import { FunctionQueueService } from './services/function-queue.service';
 import { RemoteConfigService } from "./services/remote-config.service";
 import { StatService } from "./services/stat-service";
 import { eagerLoadRemoteModules } from "./init/eagerLoadRemotes";
+
+import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy";
 import { loadRemotes } from "./init/loadRemotes";
 
 @Component({
@@ -73,6 +75,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private _remoteConfigService: RemoteConfigService,
     private injector: Injector,
+    private preloadStrategy: CustomPreloadingStrategy
   ) {}
   
   currentRouterPath: string = '';
@@ -99,7 +102,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.eventBusListener$.subscribe((res: BusEvent) => {
       if (res.event === "ADD_REMOTES") {
-        loadRemotes(remotes, this.router, this.productMainButtons)
+        loadRemotes(remotes, this.router, this.currentRouterPath, this.productMainButtons, this.preloadStrategy)
         .then(() => {
           const busEvent: BusEvent = {
             from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -111,21 +114,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       }
       if (res.event === 'ADD_REMOTES_DONE') {
-        eagerLoadRemoteModules(remotes, this.currentRouterPath, this.injector)
-        .then(() => {
-          const busEvent: BusEvent = {
-            from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
-            to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
-            event: 'EAGER_ADD_REMOTES_DONE',
-            payload: null,
-          };
-          this.eventBusPusher(busEvent);
-        });
+        // eagerLoadRemoteModules(remotes, this.currentRouterPath, this.injector)
+        // .then(() => {
+        //   const busEvent: BusEvent = {
+        //     from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+        //     to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+        //     event: 'EAGER_ADD_REMOTES_DONE',
+        //     payload: null,
+        //   };
+        //   this.eventBusPusher(busEvent);
+        // });
       }
-
       if (res.event === 'EAGER_ADD_REMOTES_DONE') {
         this._remoteConfigService.setRemotesConfigs(remotes)
         .then(() => {
+          console.log('SET_REMOTES_CONFIGS_DONE')
           const busEvent: BusEvent = {
             from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
             to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -134,6 +137,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           };
           this.eventBusPusher(busEvent);
         });
+      }
+      
+      if (res.event === 'ASK_PROJECTS_IDS') {
+        this._sendProjectsIds(res)
       }
 
 
@@ -198,10 +205,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         //   payload: { status: 'ACCESS_GRANTED' },
         // };
       }
-      if (res.event === 'ASK_PROJECTS_IDS') {
-        this._sendProjectsIds(res)
-      }
-      
+      if (res.event === 'ASK_AUTH_CONFIG') {
+        const busEvent: BusEvent = {
+          from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+          to: `${res.from}`,
+          event: 'AUTH_CONFIG',
+          payload: {
+            authStrategy: 'BACKEND-TOKEN',
+            tokenShareStrategy: 'SAVE_TEMP_DUPLICATE'
+          },
+        };
+        this.eventBusPusher(busEvent);
+      }      
     })    
   }
 
@@ -399,5 +414,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       payload: {},
     }
     this.eventBusPusher(routePathBusEvent);
+  }
+
+  go_au() {
+    this.router.navigateByUrl('/au')
+  }
+  go_faq() {
+    this.router.navigateByUrl('/faq')
+  }
+
+  unloadFaqModule() {
+    this.preloadStrategy.unloadModule('faq');
+  }
+
+  refreshFaqModule() {
+    this.preloadStrategy.refreshModule('faq');
   }
 }

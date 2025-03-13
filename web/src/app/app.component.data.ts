@@ -6,6 +6,7 @@ import { Remotes } from "./app.component.types";
 
 //[key] всегда равняется роуту.
 export const remotes: Remotes = {
+  
   au: {
     isEagerLoading: true,
     url: `${process.env["AU_WEB_URL"]}`,
@@ -13,12 +14,11 @@ export const remotes: Remotes = {
     buttonTitle: 'Аутентификация',
     remoteModuleScript: {
       remoteName: "au",
-      remoteEntry: `${process.env["AU_WEB_URL"]}/remoteEntry.js`,
-      exposedModule: "./Module",
+      remoteEntry: `${process.env["AU_WEB_URL"]}/remoteEntry2.js`,
+      exposedModule: "./AuthModule",
     },
     routerPath: "au",
     moduleName: "AuthModule",
-
   },
   faq: {
     isEagerLoading: false,
@@ -27,8 +27,8 @@ export const remotes: Remotes = {
     buttonTitle: 'Экзамен',
     remoteModuleScript: {
       remoteName: "faq",
-      remoteEntry: `${process.env["FAQ_WEB_URL"]}/remoteEntry.js`,
-      exposedModule: "./Module",
+      remoteEntry: `${process.env["FAQ_WEB_URL"]}/remoteEntry1.js`,
+      exposedModule: "./FaqModule",
     },
     routerPath: "faq",
     moduleName: "FaqModule"

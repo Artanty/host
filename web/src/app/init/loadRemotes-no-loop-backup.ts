@@ -43,8 +43,7 @@ export async function loadRemotes (
     remotes: Remotes, 
     router: Router,
     currentRouterPath: string,
-    buttonsArr: ProductButton[],
-    preloadStrategy: CustomPreloadingStrategy
+    buttonsArr: ProductButton[]
 ): Promise<void[]> {
   const routes: Routes = []
     // return Promise.all(Object.keys(remotes)
@@ -68,7 +67,14 @@ export async function loadRemotes (
       // renderProductMainButton(projectId, remotes, buttonsArr)
     })
     router.resetConfig([...router.config, ...routes]);
-    
     return Promise.resolve([])
 }
 
+function preloadRoutes(routes: Routes, preloadStrategy: CustomPreloadingStrategy) {
+  routes.forEach((route) => {
+    if (route.data && route.data['preload']) {
+      const load = () => route.loadChildren!() as Observable<any>;
+      preloadStrategy.preload(route, load).subscribe();
+    }
+  });
+}

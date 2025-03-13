@@ -3,6 +3,7 @@ import { RemoteBody, Remotes } from "../app.component.types";
 import { EVENT_BUS } from "typlib";
 import { Inject, Injector } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
+
 let remoteModule1: any; // Store the loaded module reference
 
 /**
@@ -51,7 +52,7 @@ export async function eagerLoadRemoteModule (
         providers: [routerPathProvider],
         parent: injector
       })
-      console.log('CREATING MODULE')
+      // console.log('CREATING MODULE')
       remoteModule1 = new remoteModule.AuthModule(enrichedInjector)
     }
     // setTimeout(() => {

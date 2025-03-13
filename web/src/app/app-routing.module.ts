@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TestComponent } from './components/test/test.component';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
+import { CustomPreloadingStrategy } from './core/custom-preloading-strategy';
 
 const routes: Routes = [
   {
@@ -39,7 +40,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(
+    routes, 
+    { preloadingStrategy: CustomPreloadingStrategy }
+  )],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

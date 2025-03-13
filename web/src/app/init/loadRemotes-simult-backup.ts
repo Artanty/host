@@ -1,5 +1,5 @@
-import { Route, Router, Routes } from "@angular/router";
-import { ProductButton, RemoteBody, Remotes } from "../app.component.types";
+import { Router, Routes } from "@angular/router";
+import { ProductButton, Remotes } from "../app.component.types";
 import { loadRemoteModule } from "@angular-architects/module-federation";
 import { renderProductMainButton } from "./renderAppsButtons";
 import { CustomPreloadingStrategy } from "../core/custom-preloading-strategy";
@@ -43,32 +43,17 @@ export async function loadRemotes (
     remotes: Remotes, 
     router: Router,
     currentRouterPath: string,
-    buttonsArr: ProductButton[],
-    preloadStrategy: CustomPreloadingStrategy
+    buttonsArr: ProductButton[]
 ): Promise<void[]> {
-  const routes: Routes = []
-    // return Promise.all(Object.keys(remotes)
-    // .map(projectId => loadModule(projectId, remotes, router, buttonsArr)))
-    Object.entries(remotes).forEach(([projectId, body]: [string, RemoteBody]) => {
-      const route: Route = {
-        path: remotes[projectId as keyof typeof remotes].routerPath,
-        loadChildren: () => {
-          return loadRemoteModule(remotes[projectId as keyof typeof remotes].remoteModuleScript)
-          .then((m) => {
-            const remoteModule = m[remotes[projectId as keyof typeof remotes].moduleName!]
-            
-            return remoteModule
-          })
-        },
-        data: { 
-          preload: true //remotes[projectId as keyof typeof remotes].routerPath === 'au' 
-        }
-      }
-      routes.push(route)
-      // renderProductMainButton(projectId, remotes, buttonsArr)
-    })
-    router.resetConfig([...router.config, ...routes]);
-    
-    return Promise.resolve([])
+    return Promise.all(Object.keys(remotes)
+    .map(projectId => loadModule(projectId, remotes, router, buttonsArr)))
 }
 
+function preloadRoutes(routes: Routes, preloadStrategy: CustomPreloadingStrategy) {
+  routes.forEach((route) => {
+    if (route.data && route.data['preload']) {
+      const load = () => route.loadChildren!() as Observable<any>;
+      preloadStrategy.preload(route, load).subscribe();
+    }
+  });
+}
