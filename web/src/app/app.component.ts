@@ -13,7 +13,7 @@ import {
 import { NavigationStart, Router } from "@angular/router";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { BusEvent, EVENT_BUS_LISTENER, EVENT_BUS_PUSHER } from 'typlib';
-import { remotes } from "./app.component.data";
+import { remotes, remotesFaq } from "./app.component.data";
 import { ChromeMessage, ProductButton, RegisterComponentsBusEventPayloadItem } from './app.component.types';
 import { GroupButtonsDirective } from './directives/group-buttons.directive';
 import { BusEventStoreService } from './services/bus-event-store.service';
@@ -21,10 +21,9 @@ import { ChromeMessagingService } from "./services/chrome-messaging.service";
 import { FunctionQueueService } from './services/function-queue.service';
 import { RemoteConfigService } from "./services/remote-config.service";
 import { StatService } from "./services/stat-service";
-import { eagerLoadRemoteModules } from "./init/eagerLoadRemotes";
-
 import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy";
 import { loadRemotes } from "./init/loadRemotes";
+
 
 @Component({
   selector: "app-root",
@@ -75,9 +74,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private _remoteConfigService: RemoteConfigService,
     private injector: Injector,
-    private preloadStrategy: CustomPreloadingStrategy
+    private preloadStrategy: CustomPreloadingStrategy,
   ) {}
   
+
+
+
   currentRouterPath: string = '';
 
   ngOnInit(): void {
@@ -102,7 +104,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.eventBusListener$.subscribe((res: BusEvent) => {
       if (res.event === "ADD_REMOTES") {
-        loadRemotes(remotes, this.router, this.currentRouterPath, this.productMainButtons, this.preloadStrategy)
+        loadRemotes(remotes, this.router, this.productMainButtons)
         .then(() => {
           const busEvent: BusEvent = {
             from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -403,9 +405,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.eventBusPusher(routePathBusEvent);
   }
+
   tick() {
     this.router.navigateByUrl('/faq/ticket')
   }
+
   send2au(){
     const routePathBusEvent: BusEvent = {
       event: "AU TEST",
@@ -419,15 +423,32 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   go_au() {
     this.router.navigateByUrl('/au')
   }
+
   go_faq() {
     this.router.navigateByUrl('/faq')
   }
 
-  unloadFaqModule() {
-    this.preloadStrategy.unloadModule('faq');
+  unmountRoute(path: string): void {
+    this.router.navigateByUrl('/').then(() => {
+      const routes = this.router.config.filter((route) => route.path !== path);
+      this.router.resetConfig(routes);
+
+      if ((window as any).window.faq) {
+        (window as any).window.faq = undefined
+        delete (window as any).window.faq
+      }
+      if ((window as any).webpackChunkfaq) {
+        (window as any).webpackChunkfaq = undefined
+        delete (window as any).webpackChunkfaq
+      }
+      
+    })
   }
 
-  refreshFaqModule() {
-    this.preloadStrategy.refreshModule('faq');
+  loadFaq5() {
+    loadRemotes(remotesFaq, this.router, this.productMainButtons)
+    .then(() => {
+      console.log('FINISHED faq5 module load')
+    })
   }
 }

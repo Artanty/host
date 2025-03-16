@@ -19,9 +19,9 @@
   {{ ' | '}}
   <a (click)="go_faq()">{{ 'go_faq' }}</a>
   {{ ' | '}}
-  <a (click)="unloadFaqModule()">{{ 'unloadFaq' }}</a>
+  <a (click)="loadFaq5()">{{ 'refreshFaq' }}</a>
   {{ ' | '}}
-  <a (click)="refreshFaqModule()">{{ 'refreshFaq' }}</a>
+  <button (click)="unmountRoute('faq')">Unmount FAQ Route</button>
 
 </div>
 <div class="host-container">

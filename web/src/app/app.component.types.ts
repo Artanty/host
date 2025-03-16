@@ -47,7 +47,7 @@ export interface ChromeMessage { // todo change to busEvent, add payload generic
 
 
 export interface RemoteBody {
-  isEagerLoading: boolean
+  preload: boolean
   url: string,
   buttonName: string,
   buttonTitle: string,

@@ -8,7 +8,7 @@ import { Remotes } from "./app.component.types";
 export const remotes: Remotes = {
   
   au: {
-    isEagerLoading: true,
+    preload: true,
     url: `${process.env["AU_WEB_URL"]}`,
     buttonName: 'AU',
     buttonTitle: 'Аутентификация',
@@ -21,20 +21,21 @@ export const remotes: Remotes = {
     moduleName: "AuthModule",
   },
   faq: {
-    isEagerLoading: false,
+    preload: false,
     url: `${process.env["FAQ_WEB_URL"]}`,
     buttonName: 'テスト',
     buttonTitle: 'Экзамен',
     remoteModuleScript: {
       remoteName: "faq",
-      remoteEntry: `${process.env["FAQ_WEB_URL"]}/remoteEntry1.js`,
+      remoteEntry: `${process.env["FAQ_WEB_URL"]}/remoteEntry1.11.js`,
       exposedModule: "./FaqModule",
     },
     routerPath: "faq",
     moduleName: "FaqModule"
   },
+
   // test: {
-  //   isEagerLoading: false,
+  // preload: false,
   //   url: `${process.env["FAQ_WEB_URL"]}`,
   //   buttonName: 'test',
   //   buttonTitle: 'test',
@@ -46,4 +47,20 @@ export const remotes: Remotes = {
   //   routerPath: "test",
   //   moduleName: "FaqModule"
   // }
+}
+
+export const remotesFaq: Remotes = {
+  faq: {
+    preload: false,
+    url: `http://localhost:5221`,
+    buttonName: 'テスト',
+    buttonTitle: 'Экзамен',
+    remoteModuleScript: {
+      remoteName: "faq",
+      remoteEntry: `http://localhost:5221/remoteEntry1.55.js`,
+      exposedModule: "./FaqModule",
+    },
+    routerPath: "faq",
+    moduleName: "FaqModule"
+  },
 }
