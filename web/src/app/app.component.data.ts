@@ -27,7 +27,7 @@ export const remotes: Remotes = {
     buttonTitle: 'Экзамен',
     remoteModuleScript: {
       remoteName: "faq",
-      remoteEntry: `${process.env["FAQ_WEB_URL"]}/remoteEntry1.11.js`,
+      remoteEntry: `${process.env["FAQ_WEB_URL"]}/remoteEntry1.js`,
       exposedModule: "./FaqModule",
     },
     routerPath: "faq",
@@ -56,9 +56,9 @@ export const remotesFaq: Remotes = {
     buttonName: 'テスト',
     buttonTitle: 'Экзамен',
     remoteModuleScript: {
-      remoteName: "faq",
-      remoteEntry: `http://localhost:5221/remoteEntry1.55.js`,
-      exposedModule: "./FaqModule",
+      remoteName: "faq55", // !
+      remoteEntry: `http://localhost:5221/remoteEntry1.55.js`, // !
+      exposedModule: "./FaqModule55", // !
     },
     routerPath: "faq",
     moduleName: "FaqModule"

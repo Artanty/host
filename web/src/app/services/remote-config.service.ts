@@ -4,6 +4,12 @@ import { catchError, EMPTY, filter, finalize, firstValueFrom, forkJoin, Observab
 import { RemoteBody, Remotes } from "../app.component.types";
 import { EVENT_BUS_LISTENER, BusEvent, EVENT_BUS, EVENT_BUS_PUSHER } from "typlib";
 
+export interface PushEvent {
+    type: string,
+    event?: string,
+    action?: string,
+    payload?: any
+}
 @Injectable({
     providedIn: 'root'
 })
@@ -17,23 +23,22 @@ export class RemoteConfigService {
     ) {}
 
     public setRemotesConfigs (remotes: Remotes): Promise<any[]> {
-        const arrOfObs$ = Object.entries(remotes)
-        .map(([projectId, _]: [string, RemoteBody]) => projectId)
-        .map(projectId => this.setRemoteConfig(remotes, projectId))
+        const arrOfObs$ = Object.keys(remotes)
+        .map(projectId => this._setRemoteConfig(remotes, projectId))
         
         return firstValueFrom(forkJoin(arrOfObs$))
     }
 
-    public setRemoteConfig (remotes: Remotes, projectId: string): Observable<any> {
-        return this.getRemoteConfig(remotes, projectId)
+    private _setRemoteConfig (remotes: Remotes, projectId: string): Observable<any> {
+        return this._loadRemoteConfig(remotes, projectId)
         .pipe(
             switchMap((res: any) => {
                 if (res['event_bus_hooks']) {
                     res['event_bus_hooks'].forEach((el: any) => {
                         this._createEventHook(
                             projectId, 
-                            el.trigger, 
-                            el.action, 
+                            el.on, 
+                            el.push, 
                             el.lives
                         )
                     })
@@ -44,17 +49,17 @@ export class RemoteConfigService {
         )
     }
 
-    _createEventHook (
+    private _createEventHook (
         projectId: string, 
-        trigger: any, 
-        action: string, 
+        on: any, 
+        push: PushEvent, 
         lives: string
     ): void {
         let obs$ = this.eventBusListener$
         .pipe(
             filter((res: BusEvent) => {
-                if (trigger.event) {
-                    const eventCondition = (res: BusEvent) => res.event === trigger.event
+                if (on.event) {
+                    const eventCondition = (res: BusEvent) => res.event === on.event
                     return eventCondition(res)
                 }
                 return false
@@ -64,18 +69,36 @@ export class RemoteConfigService {
         if (lives === 'once') {
             obs$ = obs$.pipe(take(1))
         }
-        obs$.subscribe(_ => {
-            this._pushBusEvent(projectId, action)
+        obs$.subscribe((res: BusEvent) => {
+            console.log(res)
+            this._pushBusEvent(projectId, push, res)
         })
     }
 
-    _pushBusEvent (projectId: string, action: string): void {
-        const busEvent: BusEvent = {
-            from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
-            to: `${projectId}@web`,
-            event: 'TRIGGER_ACTION',
-            payload: { action: action },
-        };
+    private _pushBusEvent (projectId: string, push: PushEvent, on: BusEvent): void {
+        let busEvent: BusEvent
+        switch (push.type) {
+            case 'TRIGGER_ACTION':
+                busEvent = {
+                    from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+                    to: `${projectId}@web`,
+                    event: push.type,
+                    payload: { action: push.action },
+                };
+            break;
+            case 'ANSWER': 
+                busEvent = {
+                    from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+                    to: `${on.from}`,
+                    event: on.event.replace('ASK_', ''),
+                    payload: push.payload,
+                };
+            break;
+            default:
+                throw new Error ('UNKNOWN EVENT')
+        }
+      
+        
         this.eventBusPusher(busEvent)
     }
 
@@ -86,12 +109,10 @@ export class RemoteConfigService {
      * @param projectId 
      * @returns 
      */
-    getRemoteConfig(remotes: Remotes, projectId: string): Observable<any> {
-        return this.http.get(`${remotes[projectId].url}/assets/configs/remote.json`).pipe(
+    private _loadRemoteConfig(remotes: Remotes, projectId: string): Observable<any> {
+        return this.http.get(`${remotes[projectId].url}/assets/configs/remote.json`)
+        .pipe(
             catchError(() => of(`${projectId}'s http catchError returns this to trigger forkJoin`)) 
         );
-    }
-
-    
-    
+    }   
 }

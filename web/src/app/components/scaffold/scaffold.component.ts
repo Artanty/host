@@ -29,7 +29,7 @@ export class ScaffoldComponent {
      * Если поместить в OnInit - теряется порядок
      */
     this.eventBusListener$.subscribe(res => {
-      this.items$.next([...this.items$.getValue(), res])
+      this.items$.next([res, ...this.items$.getValue()])
     })
   }
 }

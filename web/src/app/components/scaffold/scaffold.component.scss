@@ -7,3 +7,14 @@
         color:red;
     }
 }
+.container{
+    // position: relative;
+    // top: -230px;
+    // z-index: 9;
+    // background-color: #020216ba;
+    // display: block;
+    height: calc(100vh - 580px);
+    overflow-y: auto;
+    padding-bottom: 30px;
+    box-sizing: border-box;
+}

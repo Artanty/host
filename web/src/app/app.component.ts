@@ -10,7 +10,7 @@ import {
   Renderer2,
   ViewChild
 } from "@angular/core";
-import { NavigationStart, Router } from "@angular/router";
+import { NavigationStart, Route, Router } from "@angular/router";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { BusEvent, EVENT_BUS_LISTENER, EVENT_BUS_PUSHER } from 'typlib';
 import { remotes, remotesFaq } from "./app.component.data";
@@ -22,7 +22,7 @@ import { FunctionQueueService } from './services/function-queue.service';
 import { RemoteConfigService } from "./services/remote-config.service";
 import { StatService } from "./services/stat-service";
 import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy";
-import { loadRemotes } from "./init/loadRemotes";
+import { loadRemotes, updateRemotes } from "./init/loadRemotes";
 
 
 @Component({
@@ -116,18 +116,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       }
       if (res.event === 'ADD_REMOTES_DONE') {
-        // eagerLoadRemoteModules(remotes, this.currentRouterPath, this.injector)
-        // .then(() => {
-        //   const busEvent: BusEvent = {
-        //     from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
-        //     to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
-        //     event: 'EAGER_ADD_REMOTES_DONE',
-        //     payload: null,
-        //   };
-        //   this.eventBusPusher(busEvent);
-        // });
-      }
-      if (res.event === 'EAGER_ADD_REMOTES_DONE') {
         this._remoteConfigService.setRemotesConfigs(remotes)
         .then(() => {
           console.log('SET_REMOTES_CONFIGS_DONE')
@@ -213,7 +201,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           to: `${res.from}`,
           event: 'AUTH_CONFIG',
           payload: {
-            authStrategy: 'BACKEND-TOKEN',
+            authStrategy: 'BACKEND_TOKEN',
             tokenShareStrategy: 'SAVE_TEMP_DUPLICATE'
           },
         };
@@ -428,27 +416,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigateByUrl('/faq')
   }
 
-  unmountRoute(path: string): void {
+  loadFaq5() {
+    const url = this.router.url
     this.router.navigateByUrl('/').then(() => {
-      const routes = this.router.config.filter((route) => route.path !== path);
-      this.router.resetConfig(routes);
-
-      if ((window as any).window.faq) {
-        (window as any).window.faq = undefined
-        delete (window as any).window.faq
-      }
-      if ((window as any).webpackChunkfaq) {
-        (window as any).webpackChunkfaq = undefined
-        delete (window as any).webpackChunkfaq
-      }
-      
+      updateRemotes(remotesFaq, this.router, this.productMainButtons)
+      .then(() => {
+        console.log('FINISHED faq5 module load')
+        this.router.navigate([url]);
+      })
     })
   }
-
-  loadFaq5() {
-    loadRemotes(remotesFaq, this.router, this.productMainButtons)
-    .then(() => {
-      console.log('FINISHED faq5 module load')
-    })
+  
+  reloadCurrentRoute() { 
+    // this.router.navigate([this.router.url]);
+    window.location.reload()
   }
 }

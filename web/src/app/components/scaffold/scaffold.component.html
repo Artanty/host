@@ -4,7 +4,7 @@
     </div>
     <div class="row" *ngFor="let item of items; let i = index">
         <div>
-            {{ i + 1 }}
+            {{ items.length - (i) }}
         </div>
         <div>
             {{ item.event }}
