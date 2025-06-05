@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core'; 
 
 @Component({
   selector: 'app-product-card',
@@ -8,7 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class ProductCardComponent {
   public visibleName = ''
-  @Input() set name (data: string) {
+  @Input() set name(data: string) {
     this.visibleName = this._getAbbreviation(data)
   }
   
@@ -25,7 +24,7 @@ export class ProductCardComponent {
   }
 
   private _getAbbreviation(input: string) {
-    // Split the input string into words
+    
     const words = input.trim().split(/\s+/);
   
     // If there's only one word, take the first 4 symbols

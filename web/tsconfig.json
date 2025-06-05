@@ -29,6 +29,9 @@
       "node",
       "chrome"
     ],
+    "plugins": [
+      {"name": "@angular/language-service"}
+    ]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

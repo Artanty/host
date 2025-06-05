@@ -83,7 +83,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   currentRouterPath: string = '';
 
   ngOnInit(): void {
-    this.router.events.subscribe(event => {
+    this.router.events.subscribe(event =>{ 
       if (event instanceof NavigationStart) {
         const urlSegment = event.url.split('/')[1]; // Extract the first segment
         console.log('Intercepted route segment:', urlSegment);

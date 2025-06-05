@@ -1,10 +1,15 @@
 * {
   --font: "Roboto", sans-serif;
-  --fontOrigin: 1rem;     /* 16px */
-  --fontSmall: 0.625em;   /* 10px */
-  --fontMedium: 0.875em;  /* 14px */
-  --fontNormal: 1em;      /* 16px */
-  --fontLarge:  1.375em;  /* 22px */
+  --fontOrigin: 1rem;
+  /* 16px */
+  --fontSmall: 0.625em;
+  /* 10px */
+  --fontMedium: 0.875em;
+  /* 14px */
+  --fontNormal: 1em;
+  /* 16px */
+  --fontLarge: 1.375em;
+  /* 22px */
   --fontLight: 100;
   --fontRegular: 400;
   --speed: 0.65s;
@@ -16,13 +21,16 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 :host {
   transition: height 0.3s;
-  &.initial{
+
+  &.initial {
     max-height: 160px;
     height: 160px;
   }
-  &.collapsed{
+
+  &.collapsed {
     height: 60px;
   }
 }
@@ -44,14 +52,18 @@
   -webkit-transition: all var(--speed) ease;
   transition: all var(--speed) ease;
   overflow: hidden;
+
   &:hover {
     box-shadow: 0 1px 21px rgb(255 255 255);
   }
+
   background: #0000004b;
+
   &.active {
     .card__name {
       background-color: rgb(7, 223, 158);
     }
+
     background: #000000d1;
   }
 }
@@ -92,7 +104,7 @@
   transform: scale(1);
 }
 
-.card__image .overlay{
+.card__image .overlay {
   background: transparent;
   position: absolute;
   width: 100%;
@@ -100,7 +112,7 @@
   top: 0;
 }
 
-.card__image:hover .overlay{
+.card__image:hover .overlay {
   background: #00000057;
 }
 
@@ -119,7 +131,7 @@
   color: white;
   font-family: "Roboto", sans-serif;
   font-size: var(--fontLarge);
-  font-weight: var(--fontRegular); 
+  font-weight: var(--fontRegular);
   letter-spacing: 0.1rem;
   text-align: center;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -141,11 +153,12 @@
   transition: all var(--speed) ease;
   -webkit-transition: all var(--speed) ease;
 }
-  
+
 @keyframes zoom {
   from {
     object-position: 0 50%;
   }
+
   to {
     object-position: 100% 50%;
   }
@@ -156,6 +169,7 @@
     -webkit-transform: scale(1, 1);
     transform: scale(1, 1);
   }
+
   to {
     -webkit-transform: scale(1.5, 1.5);
     transform: scale(2, 2);
