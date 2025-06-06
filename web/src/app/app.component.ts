@@ -83,7 +83,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   currentRouterPath: string = '';
 
   ngOnInit(): void {
-    this.router.events.subscribe(event =>{ 
+    this.router.events.subscribe(event => { 
       if (event instanceof NavigationStart) {
         const urlSegment = event.url.split('/')[1]; // Extract the first segment
         console.log('Intercepted route segment:', urlSegment);
@@ -105,28 +105,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.eventBusListener$.subscribe((res: BusEvent) => {
       if (res.event === "ADD_REMOTES") {
         loadRemotes(remotes, this.router, this.productMainButtons)
-        .then(() => {
-          const busEvent: BusEvent = {
-            from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
-            to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
-            event: 'ADD_REMOTES_DONE',
-            payload: null,
-          };
-          this.eventBusPusher(busEvent);
-        })
+          .then(() => {
+            const busEvent: BusEvent = {
+              from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+              to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+              event: 'ADD_REMOTES_DONE',
+              payload: null,
+            };
+            this.eventBusPusher(busEvent);
+          })
       }
       if (res.event === 'ADD_REMOTES_DONE') {
         this._remoteConfigService.setRemotesConfigs(remotes)
-        .then(() => {
-          console.log('SET_REMOTES_CONFIGS_DONE')
-          const busEvent: BusEvent = {
-            from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
-            to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
-            event: 'SET_REMOTES_CONFIGS_DONE',
-            payload: null,
-          };
-          this.eventBusPusher(busEvent);
-        });
+          .then(() => {
+            console.log('SET_REMOTES_CONFIGS_DONE')
+            const busEvent: BusEvent = {
+              from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+              to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+              event: 'SET_REMOTES_CONFIGS_DONE',
+              payload: null,
+            };
+            this.eventBusPusher(busEvent);
+          });
       }
       
       if (res.event === 'ASK_PROJECTS_IDS') {
@@ -206,11 +206,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           },
         };
         this.eventBusPusher(busEvent);
-      }      
+      }
+      if (res.event === 'AUTH_DONE') {
+        this.router.navigateByUrl('/')
+      }
     })    
   }
 
-  private _sendProjectsIds (res: BusEvent) {
+  private _sendProjectsIds(res: BusEvent) {
     const remotesIds: string[] = Object.keys(remotes)
     const busEvent: BusEvent = {
       from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -220,7 +223,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.eventBusPusher(busEvent)
   }
-  private _updateProductMainButton (projectId: string, prop: keyof ProductButton, state: string) {
+  private _updateProductMainButton(projectId: string, prop: keyof ProductButton, state: string) {
     const found = this.productMainButtons.find(el => el.projectId === projectId)
     if (found) {
       if (!found[prop]) throw new Error(`no prop ${prop} in button`)
@@ -240,7 +243,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.eventBusPusher(doneBusEvent)
   }
   
-  private _clearProductNavContainer (): void {
+  private _clearProductNavContainer(): void {
     const container: HTMLElement = this.productNavContainer.nativeElement;
 
     while (container.firstChild) {
@@ -291,7 +294,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
    * При этом если из веб-воркера пришли загруженные события, придется 
    * сохранить их в busEventStoreService, затем вернуть и очистить.
   */
-  private _showOldestTicket (tickets: any[] = []) {
+  private _showOldestTicket(tickets: any[] = []) {
     const projectId = 'faq'
     const url = remotes[projectId].routerPath!
     
@@ -398,7 +401,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigateByUrl('/faq/ticket')
   }
 
-  send2au(){
+  send2au() {
     const routePathBusEvent: BusEvent = {
       event: "AU TEST",
       from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -420,10 +423,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const url = this.router.url
     this.router.navigateByUrl('/').then(() => {
       updateRemotes(remotesFaq, this.router, this.productMainButtons)
-      .then(() => {
-        console.log('FINISHED faq5 module load')
-        this.router.navigate([url]);
-      })
+        .then(() => {
+          console.log('FINISHED faq5 module load')
+          this.router.navigate([url]);
+        })
     })
   }
   
