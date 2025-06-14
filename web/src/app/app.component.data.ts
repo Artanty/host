@@ -22,6 +22,7 @@ export const remotes: Remotes = {
   },
   faq: {
     preload: false,
+    // preload: true,
     url: `${process.env["FAQ_WEB_URL"]}`,
     buttonName: 'テスト',
     buttonTitle: 'Экзамен',

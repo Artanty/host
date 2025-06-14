@@ -9,8 +9,8 @@ export class CoreService {
     // private _isRouterPathSet$ = new Subject<void>()
     // public isRouterPathSet$ = this._isRouterPathSet$.asObservable()
 
-    public setRouterPath (data: string) {
-        console.log('Router path changed: ' + data)
+    public setRouterPath(data: string) {
+        // console.log('Router path changed: ' + data)
         this._routerPath = data
         // this._isRouterPathSet$.next()
     }
@@ -19,15 +19,15 @@ export class CoreService {
         return this._routerPath;
     }
 
-    public isDev (): boolean {
+    public isDev(): boolean {
         return this.getBaseUrl().includes('http://localhost')
     }
 
-    public isInsideHost (): boolean {
+    public isInsideHost(): boolean {
         return this._routerPath !== '/'
     }
 
-    public getBaseUrl (): string {
+    public getBaseUrl(): string {
         return __webpack_public_path__;
     }
 }

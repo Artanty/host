@@ -86,7 +86,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.events.subscribe(event => { 
       if (event instanceof NavigationStart) {
         const urlSegment = event.url.split('/')[1]; // Extract the first segment
-        console.log('Intercepted route segment:', urlSegment);
+        // console.log('Intercepted route segment:', urlSegment);
         this.currentRouterPath = urlSegment
       }
     });
@@ -118,7 +118,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (res.event === 'ADD_REMOTES_DONE') {
         this._remoteConfigService.setRemotesConfigs(remotes)
           .then(() => {
-            console.log('SET_REMOTES_CONFIGS_DONE')
+            
             const busEvent: BusEvent = {
               from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
               to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -202,13 +202,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           event: 'AUTH_CONFIG',
           payload: {
             authStrategy: 'BACKEND_TOKEN',
-            tokenShareStrategy: 'SAVE_TEMP_DUPLICATE'
+            tokenShareStrategy: 'SAVE_TEMP_DUPLICATE',
+            hostOrigin: window.location.origin
           },
         };
         this.eventBusPusher(busEvent);
       }
       if (res.event === 'AUTH_DONE') {
-        this.router.navigateByUrl('/')
+        // this.router.navigateByUrl('/')
       }
     })    
   }

@@ -70,7 +70,7 @@ export class RemoteConfigService {
             obs$ = obs$.pipe(take(1))
         }
         obs$.subscribe((res: BusEvent) => {
-            console.log(res)
+            
             this._pushBusEvent(projectId, push, res)
         })
     }
