@@ -23,6 +23,7 @@ import { RemoteConfigService } from "./services/remote-config.service";
 import { StatService } from "./services/stat-service";
 import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy";
 import { loadRemotes, updateRemotes } from "./init/loadRemotes";
+import { dd } from "./utilites/dd";
 
 
 @Component({
@@ -187,13 +188,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this._updateProductMainButton(projectId, 'buttonState', 'collapsed')
           this._updateProductMainButton(projectId, 'buttonName', res.payload.username)
         }
-        console.log('go to main page');
-        // const busEvent: BusEvent = {
-        //   from: process.env['APP']!,
-        //   to: this.hostName,
-        //   event: 'auth',
-        //   payload: { status: 'ACCESS_GRANTED' },
-        // };
       }
       if (res.event === 'ASK_AUTH_CONFIG') {
         const busEvent: BusEvent = {
@@ -208,8 +202,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         };
         this.eventBusPusher(busEvent);
       }
+      if (res.event === 'PRODUCT_BTN_LOADING') {
+        this._updateProductMainButton(res.payload.projectId, 'buttonState', 'loading')
+      }
+      if (res.event === 'PRODUCT_BTN_READY') {
+        this._updateProductMainButton(res.payload.projectId, 'buttonState', 'ready')
+      }
       if (res.event === 'AUTH_DONE') {
-        // this.router.navigateByUrl('/')
+        this.router.navigateByUrl('/')
       }
     })    
   }
@@ -253,6 +253,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private _renderProductNavButton(payloadItem: RegisterComponentsBusEventPayloadItem) {
+    dd(1)
     this.functionQueueService.addToQueue(
       this._appendRemoteButton,
       this,
@@ -333,17 +334,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //   this._renderProductMainButton(projectId)
   // }
 
-  // private _renderProductMainButton (projectId: string) {
-  //   this.productMainButtons.push({
-  //     projectId: projectId, 
-  //     imgSrcBaseUrl: remotes[projectId].url,
-  //     buttonName: remotes[projectId].buttonName,
-  //     buttonTitle: remotes[projectId].buttonTitle,
-  //     routerPath: remotes[projectId].routerPath,
-  //     buttonState: 'initial'
-  //   })
-  // }
-
   private _sendRoutePathToRemoteMfe(projectId: string) {
     
     const routePathBusEvent: BusEvent = {
@@ -382,6 +372,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.groupButtonsDirective.triggerGrouping()
 
     this.renderer.listen(remoteButton, 'buttonClick', (_: CustomEvent) => {
+      dd('product button clicked')
       //
     });
   }
@@ -436,3 +427,5 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     window.location.reload()
   }
 }
+
+

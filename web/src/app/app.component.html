@@ -33,7 +33,8 @@
   <div class="mainButtons" [class.wide]="isHomeRoute()">
     @if (productMainButtons.length) {
       @for (item of productMainButtons; track item) {
-        <app-product-card [ngClass]="item.buttonState"
+        <app-product-card 
+          [ngClass]="item.buttonState"
           [name]="item.buttonName"
           [title]="item.buttonTitle"
           [imgSrcBaseUrl]="item.imgSrcBaseUrl"

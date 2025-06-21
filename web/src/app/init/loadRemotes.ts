@@ -3,6 +3,13 @@ import { ProductButton, RemoteBody, Remotes } from "../app.component.types";
 import { loadRemoteModule } from "@angular-architects/module-federation";
 import { renderProductMainButton } from "./renderAppsButtons";
 
+/**
+ * Происходит на res.event === "ADD_REMOTES"
+ * Берется 
+ * - конфиг remotes: Remotes с адресами ремоутов, кнопками
+ * - роутер для добавления роутов ремоутов
+ * - пустой массив кнопок для их добавления
+ * */
 export async function loadRemotes (
     remotes: Remotes, 
     router: Router,
