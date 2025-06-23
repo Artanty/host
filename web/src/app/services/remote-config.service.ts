@@ -1,8 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
-import { catchError, EMPTY, filter, finalize, firstValueFrom, forkJoin, Observable, of, switchMap, take, tap } from "rxjs";
+import { catchError, concatMap, EMPTY, filter, finalize, firstValueFrom, forkJoin, Observable, of, switchMap, take, tap } from "rxjs";
 import { RemoteBody, Remotes } from "../app.component.types";
 import { EVENT_BUS_LISTENER, BusEvent, EVENT_BUS, EVENT_BUS_PUSHER } from "typlib";
+import { dd } from "../utilites/dd";
 
 export interface PushEvent {
     type: string,
@@ -23,6 +24,7 @@ export class RemoteConfigService {
     ) {}
 
     public setRemotesConfigs(remotes: Remotes): Promise<any[]> {
+
         const arrOfObs$ = Object.keys(remotes)
             .map(projectId => this._setRemoteConfig(remotes, projectId))
         
@@ -35,6 +37,7 @@ export class RemoteConfigService {
                 switchMap((res: any) => {
                     if (res['event_bus_hooks']) {
                         res['event_bus_hooks'].forEach((el: any) => {
+                            dd(el)
                             this._createEventHook(
                                 projectId, 
                                 el.on, 
@@ -112,6 +115,7 @@ export class RemoteConfigService {
     private _loadRemoteConfig(remotes: Remotes, projectId: string): Observable<any> {
         return this.http.get(`${remotes[projectId].url}/assets/configs/remote.json`)
             .pipe(
+                tap(res => dd(res)),
                 catchError(() => of(`${projectId}'s http catchError returns this to trigger forkJoin`)) 
             );
     }   

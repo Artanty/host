@@ -26,6 +26,7 @@
   transition: height 0.3s;
 
   &.initial,
+  &.locked,
   &.ready {
     max-height: 160px;
     height: 160px;
@@ -217,4 +218,30 @@
     -webkit-transform: scale(1.5, 1.5);
     transform: scale(2, 2);
   }
+}
+
+:host:not(.locked) .lockedIcon {
+  opacity: 0;
+}
+
+:host.locked {
+  & .card__body {
+    background: #050c1f;
+  }
+
+  & .card__name {
+    margin-top: 80px;
+    font-size: 15px;
+  }
+
+}
+
+:host.locked .lockedIcon {
+  opacity: 1;
+  position: absolute;
+  display: block;
+  top: calc(50% - 36px);
+  color: #bebebe;
+  font-size: 67px !important;
+  left: calc(50% - 25px);
 }

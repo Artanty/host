@@ -34,6 +34,20 @@ export const remotes: Remotes = {
     routerPath: "faq",
     moduleName: "FaqModule"
   },
+  doro: {
+    preload: false,
+    // preload: true,
+    url: `${process.env["DORO_WEB_URL"]}`,
+    buttonName: '토마토',
+    buttonTitle: '',
+    remoteModuleScript: {
+      remoteName: "doro",
+      remoteEntry: `${process.env["DORO_WEB_URL"]}/remoteEntry3.js`,
+      exposedModule: "./DoroModule",
+    },
+    routerPath: "doro",
+    moduleName: "DoroModule"
+  },
 
   // test: {
   // preload: false,
