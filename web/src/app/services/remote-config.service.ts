@@ -37,7 +37,7 @@ export class RemoteConfigService {
                 switchMap((res: any) => {
                     if (res['event_bus_hooks']) {
                         res['event_bus_hooks'].forEach((el: any) => {
-                            dd(el)
+                            // dd(el)
                             this._createEventHook(
                                 projectId, 
                                 el.on, 
@@ -115,7 +115,7 @@ export class RemoteConfigService {
     private _loadRemoteConfig(remotes: Remotes, projectId: string): Observable<any> {
         return this.http.get(`${remotes[projectId].url}/assets/configs/remote.json`)
             .pipe(
-                tap(res => dd(res)),
+                // tap(res => dd(res)),
                 catchError(() => of(`${projectId}'s http catchError returns this to trigger forkJoin`)) 
             );
     }   

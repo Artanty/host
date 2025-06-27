@@ -203,7 +203,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.eventBusPusher(busEvent);
       }
       if (res.event === 'PRODUCT_BTN_LOCKED') {
-        dd('PRODUCT_BTN_LOCKED')
+        // dd('PRODUCT_BTN_LOCKED')
         this._updateProductMainButton(res.payload.projectId, 'buttonState', 'locked')
       }
       if (res.event === 'PRODUCT_BTN_LOADING') {
@@ -213,7 +213,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this._updateProductMainButton(res.payload.projectId, 'buttonState', 'ready')
       }
       if (res.event === 'AUTH_DONE') {
-        this.router.navigateByUrl('/')
+        this.router.navigateByUrl('/home')
       }
     })    
   }
