@@ -39,7 +39,7 @@ export const remotes: Remotes = {
     // preload: true,
     url: `${process.env["DORO_WEB_URL"]}`,
     buttonName: '토마토',
-    buttonTitle: '',
+    buttonTitle: 'Помидор',
     remoteModuleScript: {
       remoteName: "doro",
       remoteEntry: `${process.env["DORO_WEB_URL"]}/remoteEntry3.js`,

@@ -180,15 +180,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (res.event === 'ASK_ROUTER_PATH') {
         this._sendRoutePathToRemoteMfe(res.payload["projectId"])
       }
-      if (res.event === 'auth') {
-        // const projectId = res.from.split('@')[0]
-        const projectId = res.from
-        if (res.payload.status === 'ACCESS_GRANTED') {
-          // collapse au icon, change its name
-          this._updateProductMainButton(projectId, 'buttonState', 'collapsed')
-          this._updateProductMainButton(projectId, 'buttonName', res.payload.username)
-        }
-      }
+      // if (res.event === 'auth') {
+      //   // const projectId = res.from.split('@')[0]
+      //   const projectId = res.from
+      //   if (res.payload.status === 'ACCESS_GRANTED') {
+      //     // collapse au icon, change its name
+      //     this._updateProductMainButton(projectId, 'buttonState', 'collapsed')
+      //     this._updateProductMainButton(projectId, 'buttonName', res.payload.username)
+      //   }
+      // }
       if (res.event === 'ASK_AUTH_CONFIG') {
         const busEvent: BusEvent = {
           from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -203,7 +203,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.eventBusPusher(busEvent);
       }
       if (res.event === 'PRODUCT_BTN_LOCKED') {
-        // dd('PRODUCT_BTN_LOCKED')
         this._updateProductMainButton(res.payload.projectId, 'buttonState', 'locked')
       }
       if (res.event === 'PRODUCT_BTN_LOADING') {
@@ -211,6 +210,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (res.event === 'PRODUCT_BTN_READY') {
         this._updateProductMainButton(res.payload.projectId, 'buttonState', 'ready')
+      }
+      if (res.event === 'PRODUCT_BTN_COLLAPSED') {
+        this._updateProductMainButton(res.payload.projectId, 'buttonState', 'collapsed')
+        this._updateProductMainButton(res.payload.projectId, 'buttonName', res.payload.username)
       }
       if (res.event === 'AUTH_DONE') {
         this.router.navigateByUrl('/home')
