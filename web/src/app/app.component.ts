@@ -218,6 +218,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (res.event === 'AUTH_DONE') {
         this.router.navigateByUrl('/home')
       }
+      if (res.event === 'GO_TO_REMOTE_PATH') {
+        this._goToRemotePath(res.payload.routerPath)
+      }
     })    
   }
 
@@ -341,6 +344,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //   this._renderProductMainButton(projectId)
   // }
 
+  private _goToRemotePath(projectId: string): Promise<boolean> {
+    const remoteRootRouterPath = this._remoteConfigService.getRemoteRouterPath(projectId)
+    return this.router.navigateByUrl(remoteRootRouterPath)
+  }
   private _sendRoutePathToRemoteMfe(projectId: string) {
     
     const routePathBusEvent: BusEvent = {

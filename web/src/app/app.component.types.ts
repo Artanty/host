@@ -84,8 +84,12 @@ export interface InterceptorConfigModification {
   valueHandler: ModValueHandler
 }
 export interface InterceptorConfig {
-  url_pattern: string,
-  data: InterceptorConfigModification[];
+  on: "REQUEST" | "ERROR",
+  url_pattern?: string, // todo
+  data?: InterceptorConfigModification[]; // todo
+  trigger?: number // todo
+  action?: string // todo
+  project_id?: string // todo
 }
 export interface EventHookConfig {
   on: { event: string }

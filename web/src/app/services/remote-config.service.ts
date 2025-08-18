@@ -15,7 +15,7 @@ export interface PushEvent {
     providedIn: 'root'
 })
 export class RemoteConfigService {
-
+    private _remoteConfigs: Record<string, any> = {}
     private _interceptors: Map<string, InterceptorConfig> = new Map();
 
     constructor(
@@ -32,10 +32,15 @@ export class RemoteConfigService {
 
     public setRemotesConfigs(remotes: Remotes): Promise<any[]> {
 
+        this._remoteConfigs = remotes;
         const arrOfObs$ = Object.keys(remotes)
             .map(projectId => this._setRemoteConfig(remotes, projectId))
         
         return firstValueFrom(forkJoin(arrOfObs$))
+    }
+
+    public getRemoteRouterPath(remoteId: string): string {
+        return this._remoteConfigs[remoteId].routerPath
     }
 
     private _setRemoteConfig(remotes: Remotes, projectId: string): Observable<any> {
