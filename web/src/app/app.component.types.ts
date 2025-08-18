@@ -5,14 +5,14 @@ import { BusEvent } from "typlib"
 
 
 export interface RegisterComponentsBusEventPayloadItem {
-    customElementName: string
-    customElementInputs: any,
-    customElementTransclusion: string
+  customElementName: string
+  customElementInputs: any,
+  customElementTransclusion: string
 }
 
 export type RegisterComponentsBusEvent = BusEvent<{
-    componentType: string,
-    items: RegisterComponentsBusEventPayloadItem[]
+  componentType: string,
+  items: RegisterComponentsBusEventPayloadItem[]
 }>
 
 
@@ -66,4 +66,34 @@ export interface ProductButton {
   buttonTitle: string
   routerPath: string
   buttonState: string
+}
+export interface PushEvent {
+  "type": string,
+  "payload": any
+}
+
+export interface ModValueHandler {
+  source: 'localStorage' | 'sessionStorage' | 'Cookies' | 'window',
+  prop: string,
+  prepend?: string
+}
+
+export interface InterceptorConfigModification {
+  target: 'headers' | 'body';
+  key: string;
+  valueHandler: ModValueHandler
+}
+export interface InterceptorConfig {
+  url_pattern: string,
+  data: InterceptorConfigModification[];
+}
+export interface EventHookConfig {
+  on: { event: string }
+  push: PushEvent
+  lives: 'once' | number
+}
+
+export interface RemoteConfig {
+  event_bus_hooks?: EventHookConfig[],
+  interceptors?: InterceptorConfig[]
 }

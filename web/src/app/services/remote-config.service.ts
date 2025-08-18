@@ -1,7 +1,7 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpInterceptorFn } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { catchError, concatMap, EMPTY, filter, finalize, firstValueFrom, forkJoin, Observable, of, switchMap, take, tap } from "rxjs";
-import { RemoteBody, Remotes } from "../app.component.types";
+import { InterceptorConfig, InterceptorConfigModification, RemoteBody, Remotes } from "../app.component.types";
 import { EVENT_BUS_LISTENER, BusEvent, EVENT_BUS, EVENT_BUS_PUSHER } from "typlib";
 import { dd } from "../utilites/dd";
 
@@ -15,6 +15,9 @@ export interface PushEvent {
     providedIn: 'root'
 })
 export class RemoteConfigService {
+
+    private _interceptors: Map<string, InterceptorConfig> = new Map();
+
     constructor(
         private http: HttpClient,
         @Inject(EVENT_BUS_LISTENER)
@@ -22,6 +25,10 @@ export class RemoteConfigService {
         @Inject(EVENT_BUS_PUSHER)
         private eventBusPusher: (busEvent: BusEvent) => void,
     ) {}
+
+    public getInterceptors(): InterceptorConfig[] {
+        return Array.from(this._interceptors.values());
+    }
 
     public setRemotesConfigs(remotes: Remotes): Promise<any[]> {
 
@@ -35,7 +42,7 @@ export class RemoteConfigService {
         return this._loadRemoteConfig(remotes, projectId)
             .pipe(
                 switchMap((res: any) => {
-                    if (res['event_bus_hooks']) {
+                    if (res['event_bus_hooks'] && Array.isArray(res['event_bus_hooks']) && res['event_bus_hooks'].length) {
                         res['event_bus_hooks'].forEach((el: any) => {
                             // dd(el)
                             this._createEventHook(
@@ -46,10 +53,20 @@ export class RemoteConfigService {
                             )
                         })
                     }
+                    if (res['interceptors'] && Array.isArray(res['interceptors']) && res['interceptors'].length) {
+                        res['interceptors'].forEach(interceptorConfig => {
+                            this._registerInterceptor(projectId, interceptorConfig);    
+                        })
+                    }
                     return of(`${projectId}'s switchMap returns this to trigger forkJoin`)
                 }),
             
             )
+    }
+
+    private _registerInterceptor(projectId: string, config: InterceptorConfig): void {
+        
+        this._interceptors.set(projectId, config);
     }
 
     private _createEventHook(
@@ -104,7 +121,6 @@ export class RemoteConfigService {
         
         this.eventBusPusher(busEvent)
     }
-
 
     /**
      * 

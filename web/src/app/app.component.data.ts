@@ -10,7 +10,7 @@ export const remotes: Remotes = {
   au: {
     preload: true,
     url: `${process.env["AU_WEB_URL"]}`,
-    buttonName: 'AU',
+    buttonName: 'au',
     buttonTitle: 'Аутентификация',
     remoteModuleScript: {
       remoteName: "au",
@@ -20,34 +20,48 @@ export const remotes: Remotes = {
     routerPath: "au",
     moduleName: "AuthModule",
   },
-  faq: {
+  note: {
     preload: false,
     // preload: true,
-    url: `${process.env["FAQ_WEB_URL"]}`,
-    buttonName: 'テスト',
-    buttonTitle: 'Экзамен',
+    url: `${process.env["NOTE_WEB_URL"]}`,
+    buttonName: 'note',
+    buttonTitle: 'Записки',
     remoteModuleScript: {
-      remoteName: "faq",
-      remoteEntry: `${process.env["FAQ_WEB_URL"]}/remoteEntry1.js`,
-      exposedModule: "./FaqModule",
+      remoteName: "note",
+      remoteEntry: `${process.env["NOTE_WEB_URL"]}/remoteEntry14.js`,
+      exposedModule: "./NoteModule",
     },
-    routerPath: "faq",
-    moduleName: "FaqModule"
+    routerPath: "note",
+    moduleName: "NoteModule"
   },
-  doro: {
-    preload: false,
-    // preload: true,
-    url: `${process.env["DORO_WEB_URL"]}`,
-    buttonName: '토마토',
-    buttonTitle: 'Помидор',
-    remoteModuleScript: {
-      remoteName: "doro",
-      remoteEntry: `${process.env["DORO_WEB_URL"]}/remoteEntry3.js`,
-      exposedModule: "./DoroModule",
-    },
-    routerPath: "doro",
-    moduleName: "DoroModule"
-  },
+  // faq: {
+  //   preload: false,
+  //   // preload: true,
+  //   url: `${process.env["FAQ_WEB_URL"]}`,
+  //   buttonName: 'faq', //テスト
+  //   buttonTitle: 'Экзамен',
+  //   remoteModuleScript: {
+  //     remoteName: "faq",
+  //     remoteEntry: `${process.env["FAQ_WEB_URL"]}/remoteEntry1.js`,
+  //     exposedModule: "./FaqModule",
+  //   },
+  //   routerPath: "faq",
+  //   moduleName: "FaqModule"
+  // },
+  // doro: {
+  //   preload: false,
+  //   // preload: true,
+  //   url: `${process.env["DORO_WEB_URL"]}`,
+  //   buttonName: 'doro', // 토마토
+  //   buttonTitle: 'Помидор',
+  //   remoteModuleScript: {
+  //     remoteName: "doro",
+  //     remoteEntry: `${process.env["DORO_WEB_URL"]}/remoteEntry3.js`,
+  //     exposedModule: "./DoroModule",
+  //   },
+  //   routerPath: "doro",
+  //   moduleName: "DoroModule"
+  // },
 
   // test: {
   // preload: false,

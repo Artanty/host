@@ -13,9 +13,9 @@ import { HomeComponent } from './components/home/home.component'
 import { CoreService } from "./services/core.service";
 import { ProductCardComponent } from './components/product-card/product-card.component'
 import { BusEventStoreService } from "./services/bus-event-store.service"
-import { authInterceptor } from "./interceptors/auth.interceptor";
 import { ScaffoldComponent } from './components/scaffold/scaffold.component';
 import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy"
+import { remoteInterceptor } from "./interceptors/remote.interceptor"
 
 export const initBusEvent: BusEvent = {
   event: "ADD_REMOTES",
@@ -75,7 +75,7 @@ export const eventBus$ = new BehaviorSubject(initBusEvent)
       multi: true,
     },
     provideHttpClient(
-      withInterceptors([authInterceptor])
+      withInterceptors([remoteInterceptor])
     )
   ],
   bootstrap: [AppComponent], 
