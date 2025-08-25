@@ -225,7 +225,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private _sendProjectsIds(res: BusEvent) {
-    const remotesIds: string[] = Object.keys(remotes)
+    const remotesIds: string[] = Object.keys(remotes).filter(el => el !== 'gui') // todo
     const busEvent: BusEvent = {
       from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
       to: res.from,

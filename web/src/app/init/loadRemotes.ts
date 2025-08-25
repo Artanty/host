@@ -10,10 +10,10 @@ import { renderProductMainButton } from "./renderAppsButtons";
  * - роутер для добавления роутов ремоутов
  * - пустой массив кнопок для их добавления
  * */
-export async function loadRemotes (
-    remotes: Remotes, 
-    router: Router,
-    buttonsArr: ProductButton[],
+export async function loadRemotes(
+  remotes: Remotes, 
+  router: Router,
+  buttonsArr: ProductButton[],
     
 ): Promise<void[]> {
   const routes: Routes = []
@@ -22,11 +22,14 @@ export async function loadRemotes (
       path: remotes[projectId as keyof typeof remotes].routerPath,
       loadChildren: () => {
         return loadRemoteModule(remotes[projectId as keyof typeof remotes].remoteModuleScript)
-        .then((m) => {
-          const remoteModule = m[remotes[projectId as keyof typeof remotes].moduleName!]
+          .then((m) => {
+            const remoteModule = m[remotes[projectId as keyof typeof remotes].moduleName!]
           
-          return remoteModule
-        })
+            return remoteModule
+          }).catch((e) => {
+            console.log('catched')
+            return;
+          })
       },
       data: {
         preload: remotes[projectId as keyof typeof remotes].preload 
@@ -41,11 +44,11 @@ export async function loadRemotes (
   return Promise.resolve([])
 }
 
-export async function updateRemotes (
-    remotes: Remotes, 
-    router: Router,
-    buttonsArr: ProductButton[],
-  ): Promise<void[]> {
+export async function updateRemotes(
+  remotes: Remotes, 
+  router: Router,
+  buttonsArr: ProductButton[],
+): Promise<void[]> {
   // const routes: Routes = []
   // Object.entries(remotes).forEach(([projectId, body]: [string, RemoteBody]) => {
     
@@ -57,11 +60,11 @@ export async function updateRemotes (
     path: remotes[projectId as keyof typeof remotes].routerPath,
     loadChildren: () => {
       return loadRemoteModule(remotes[projectId as keyof typeof remotes].remoteModuleScript)
-      .then((m) => {
-        const remoteModule = m[remotes[projectId as keyof typeof remotes].moduleName!]
+        .then((m) => {
+          const remoteModule = m[remotes[projectId as keyof typeof remotes].moduleName!]
         
-        return remoteModule
-      })
+          return remoteModule
+        })
     },
     data: { 
       preload: remotes[projectId as keyof typeof remotes].routerPath === 'au' 

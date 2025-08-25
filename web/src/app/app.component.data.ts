@@ -6,7 +6,19 @@ import { Remotes } from "./app.component.types";
 
 //[key] всегда равняется роуту.
 export const remotes: Remotes = {
-  
+  gui: {
+    preload: true,
+    url: `${process.env["GUI_WEB_URL"]}`,
+    buttonName: 'gui',
+    buttonTitle: 'Библиотека компонентов',
+    remoteModuleScript: {
+      remoteName: "gui",
+      remoteEntry: `${process.env["GUI_WEB_URL"]}/remoteEntry4209.js`,
+      exposedModule: "./GuiModule",
+    },
+    routerPath: "gui",
+    moduleName: "GuiModule",
+  },
   au: {
     preload: true,
     url: `${process.env["AU_WEB_URL"]}`,
