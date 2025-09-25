@@ -1,5 +1,5 @@
 import { HttpClientModule, provideHttpClient, withInterceptors } from "@angular/common/http"
-import { Inject, NgModule } from "@angular/core"
+import { APP_INITIALIZER, Inject, NgModule } from "@angular/core"
 import { ReactiveFormsModule } from "@angular/forms"
 import { BrowserModule } from "@angular/platform-browser"
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations"
@@ -16,6 +16,16 @@ import { BusEventStoreService } from "./services/bus-event-store.service"
 import { ScaffoldComponent } from './components/scaffold/scaffold.component';
 import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy"
 import { remoteInterceptor } from "./interceptors/remote.interceptor"
+import { GuiDirective } from "./components/_remotes/web-component-wrapper/gui.directive"
+import { WebComponentWrapperComponent } from "./components/_remotes/web-component-wrapper/web-component-wrapper"
+import { UserAvatarWrapperComponent } from "./components/_remotes/user-avatar-wrapper.component"
+import { UserAvatarWrapperFuncComponent } from "./components/_remotes/user-avatar-wrapper-func.component"
+import { UserAvatarWrapperModuleComponent } from "./components/_remotes/user-avatar-wrapper-module.component"
+import { RouteTrackerService } from "./services/route-tracker.service"
+
+export function setupRouteTracker(routeTracker: RouteTrackerService) {
+  return () => routeTracker.init();
+}
 
 export const initBusEvent: BusEvent = {
   event: "ADD_REMOTES",
@@ -34,6 +44,11 @@ export const eventBus$ = new BehaviorSubject(initBusEvent)
     HomeComponent, 
     ProductCardComponent, 
     ScaffoldComponent,
+    UserAvatarWrapperComponent,
+    
+    UserAvatarWrapperFuncComponent,
+    UserAvatarWrapperModuleComponent
+
   ],
   imports: [
     BrowserModule,
@@ -41,6 +56,8 @@ export const eventBus$ = new BehaviorSubject(initBusEvent)
     ReactiveFormsModule,
     BrowserAnimationsModule,
     // HttpClientModule,
+    WebComponentWrapperComponent,
+    GuiDirective
   ],
   providers: [
     CustomPreloadingStrategy,
@@ -76,7 +93,13 @@ export const eventBus$ = new BehaviorSubject(initBusEvent)
     },
     provideHttpClient(
       withInterceptors([remoteInterceptor])
-    )
+    ),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: setupRouteTracker,
+      deps: [RouteTrackerService],
+      multi: true
+    }
   ],
   bootstrap: [AppComponent], 
 })

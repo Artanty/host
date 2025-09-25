@@ -64,7 +64,7 @@ export interface ProductButton {
   imgSrcBaseUrl: string,
   buttonName: string
   buttonTitle: string
-  routerPath: string
+  routerPath: string,
   buttonState: string
 }
 export interface PushEvent {

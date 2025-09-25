@@ -10,17 +10,20 @@ export class ProductCardComponent {
   @Input() set name(data: string) {
     this.visibleName = this._getAbbreviation(data)
   }
-  
+  @Input() projectId: string = ''
   @Input() title: string = ''
   @Input() imgSrcBaseUrl: string = ''
   @Input() routerLinkActiveOptions: { exact: boolean } = { exact: false };
   @Input() routerPath: string = ''
   @Input() state: string = ''
   
-  @Output() buttonClick = new EventEmitter<string>();
+  @Output() buttonClick = new EventEmitter<any>();
   
   public onButtonClick() {
-    this.buttonClick.emit('')
+    this.buttonClick.emit({
+      state: this.state,
+      projectId: this.projectId
+    })
   }
 
   private _getAbbreviation(input: string) {

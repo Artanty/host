@@ -1,15 +1,34 @@
-<a class="card"
-  [routerLink]="routerPath"
-  [routerLinkActive]="'active'"
-  [routerLinkActiveOptions]="routerLinkActiveOptions"
-  (click)="onButtonClick()"
->
-  <figure class="card__image">
-    <img [src]="imgSrcBaseUrl + '/assets/images/product-btn-img.jpg'" alt="Short description" />
-    <div class="overlay"></div>
-  </figure>
-  <div class="card__body">
-    <h3 class="card__name" [title]="title">{{ visibleName }}</h3>
-  </div>
-  <i class="lockedIcon mu mu-lock"></i>
-</a>
+<ng-container *ngIf="state !== 'failed'">
+  <a class="card"
+    [routerLink]="routerPath"
+    [routerLinkActive]="'active'"
+    [routerLinkActiveOptions]="routerLinkActiveOptions"
+    (click)="onButtonClick()"
+  >
+    <figure class="card__image">
+      <img [src]="imgSrcBaseUrl + '/assets/images/product-btn-img.jpg'" alt="Short description" />
+      <div class="overlay"></div>
+    </figure>
+    <div class="card__body">
+      <h3 class="card__name" [title]="title">{{ visibleName }}</h3>
+    </div>
+    <i class="lockedIcon mu mu-lock"></i>
+  </a>
+</ng-container>
+
+<ng-container *ngIf="state === 'failed'">
+  <a class="card"
+    (click)="onButtonClick()"
+  >
+    <figure class="card__image">
+      <!-- <img [src]="imgSrcBaseUrl + '/assets/images/product-btn-img.jpg'" alt="Short description" /> -->
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHRklKS0xNTk9OU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigD//2Q==" alt="1px red JPG">
+      <div class="overlay"></div>
+    </figure>
+    <div class="card__body">
+      <h3 class="card__name" [title]="title">{{ visibleName }}</h3>
+    </div>
+    <i class="lockedIcon mu mu-lock"></i>
+    <i class="refreshIcon mu mu-refresh"></i>
+  </a>
+</ng-container>

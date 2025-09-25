@@ -1,16 +1,17 @@
 import { ProductButton, Remotes } from "../app.component.types";
 
-export function renderProductMainButton (
+export function renderProductMainButton(
     projectId: string, 
     remotes: Remotes, 
-    buttonsArr: ProductButton[]
+    buttonsArr: ProductButton[],
+    buttonState: string
 ): void {
     buttonsArr.push({
-      projectId: projectId, 
-      imgSrcBaseUrl: remotes[projectId].url,
-      buttonName: remotes[projectId].buttonName,
-      buttonTitle: remotes[projectId].buttonTitle,
-      routerPath: remotes[projectId].routerPath,
-      buttonState: 'initial'
+        projectId: projectId, 
+        imgSrcBaseUrl: remotes[projectId].url,
+        buttonName: remotes[projectId].buttonName,
+        buttonTitle: remotes[projectId].buttonTitle,
+        routerPath: remotes[projectId].routerPath,
+        buttonState: buttonState
     })
-  }
+}

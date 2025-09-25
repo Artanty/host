@@ -8,7 +8,7 @@ import { BusEvent, EVENT_BUS_PUSHER } from 'typlib';
 export const remoteInterceptor: HttpInterceptorFn = (req, next) => {
   const remoteConfigService = inject(RemoteConfigService)
   const eventBusPusher = inject(EVENT_BUS_PUSHER)
-  console.log(remoteConfigService.getInterceptors())
+  // console.log(remoteConfigService.getInterceptors())
   const interceptorConfigs = remoteConfigService.getInterceptors()
 
   const requestConfigs: InterceptorConfig[] = interceptorConfigs.filter(el => _isRequestConfig(req, el))
@@ -54,8 +54,6 @@ export const remoteInterceptor: HttpInterceptorFn = (req, next) => {
       });
     })
   }
-
-  
 
   return next(modifiedReq).pipe(
     catchError((error: HttpErrorResponse) => {

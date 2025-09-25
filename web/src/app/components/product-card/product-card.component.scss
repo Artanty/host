@@ -27,9 +27,11 @@
 
   &.initial,
   &.locked,
-  &.ready {
+  &.ready,
+  &.failed {
     max-height: 160px;
-    height: 160px;
+    // height: 160px;
+    height: 110px;
   }
 
   &.collapsed {
@@ -48,6 +50,7 @@
       animation: spin 8s linear infinite;
       margin: auto;
       overflow: hidden;
+      display: block;
 
       &:before {
         position: absolute;
@@ -224,7 +227,13 @@
   opacity: 0;
 }
 
-:host.locked {
+:host:not(.failed) .refreshIcon {
+  opacity: 0;
+}
+
+
+:host.locked,
+:host.failed {
   & .card__body {
     background: #050c1f;
   }
@@ -248,4 +257,14 @@
 
 :host.locked {
   pointer-events: none;
+}
+
+:host.failed .refreshIcon {
+  opacity: 1;
+  position: absolute;
+  display: block;
+  top: calc(50% - 36px);
+  color: #bebebe;
+  font-size: 67px !important;
+  left: calc(50% - 31px);
 }

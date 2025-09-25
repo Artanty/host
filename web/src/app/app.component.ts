@@ -11,7 +11,7 @@ import {
   ViewChild
 } from "@angular/core";
 import { NavigationStart, Route, Router } from "@angular/router";
-import { BehaviorSubject, Observable, Subject } from "rxjs";
+import { BehaviorSubject, catchError, Observable, Subject } from "rxjs";
 import { BusEvent, EVENT_BUS_LISTENER, EVENT_BUS_PUSHER } from 'typlib';
 import { remotes, remotesFaq } from "./app.component.data";
 import { ChromeMessage, ProductButton, RegisterComponentsBusEventPayloadItem } from './app.component.types';
@@ -22,39 +22,23 @@ import { FunctionQueueService } from './services/function-queue.service';
 import { RemoteConfigService } from "./services/remote-config.service";
 import { StatService } from "./services/stat-service";
 import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy";
-import { loadRemotes, updateRemotes } from "./init/loadRemotes";
+import { loadRemotes, retryRemoteLoad } from "./init/loadRemotes";
 import { dd } from "./utilites/dd";
+import { DynamicLoaderService } from "./services/dynamic-loader.service";
 
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
-  providers: [
-    // {
-    //   provide: EVENT_BUS_LISTENER,
-    //   useFactory: (eventBus$: BehaviorSubject<BusEvent>) => {
-    //     return eventBus$
-    //       .asObservable()
-    //       .pipe(filter((res) => res.to === `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`));
-    //   },
-    //   deps: [EVENT_BUS],
-    // },
-    // {
-    //   provide: EVENT_BUS_PUSHER,
-    //   useFactory: (eventBus$: BehaviorSubject<BusEvent>) => {
-    //     return (busEvent: BusEvent) => {
-    //       eventBus$.next(busEvent);
-    //     };
-    //   },
-    //   deps: [EVENT_BUS],
-    // },
-  ],
+  providers: [],
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('productNavContainer', { static: false }) productNavContainer!: ElementRef;  
   @ViewChild(GroupButtonsDirective) groupButtonsDirective!: GroupButtonsDirective;
   
+  public remoteEntryUrl = `${process.env["AU_WEB_URL"]}/remoteEntry2.js`
+
   public productMainButtons: ProductButton[] = []
   
   private ngAfterViewInit$ = new BehaviorSubject<boolean>(false);
@@ -76,11 +60,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private _remoteConfigService: RemoteConfigService,
     private injector: Injector,
     private preloadStrategy: CustomPreloadingStrategy,
+    private dynamicLoader: DynamicLoaderService
   ) {}
   
-
-
-
   currentRouterPath: string = '';
 
   ngOnInit(): void {
@@ -103,9 +85,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    this.eventBusListener$.subscribe((res: BusEvent) => {
+    this.eventBusListener$.subscribe(async (res: BusEvent) => {
       if (res.event === "ADD_REMOTES") {
-        loadRemotes(remotes, this.router, this.productMainButtons)
+        loadRemotes(remotes, this.router, this.productMainButtons, this.dynamicLoader)
           .then(() => {
             const busEvent: BusEvent = {
               from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -119,7 +101,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (res.event === 'ADD_REMOTES_DONE') {
         this._remoteConfigService.setRemotesConfigs(remotes)
           .then(() => {
-            
             const busEvent: BusEvent = {
               from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
               to: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -129,12 +110,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.eventBusPusher(busEvent);
           });
       }
-      
       if (res.event === 'ASK_PROJECTS_IDS') {
         this._sendProjectsIds(res)
       }
-
-
       // console.log('HOST received BUS event: ' + res.event)
       if (res.event === "CLOSE_EXT") {
         window.close();
@@ -213,7 +191,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (res.event === 'PRODUCT_BTN_COLLAPSED') {
         this._updateProductMainButton(res.payload.projectId, 'buttonState', 'collapsed')
-        this._updateProductMainButton(res.payload.projectId, 'buttonName', res.payload.username)
+        // this._updateProductMainButton(res.payload.projectId, 'buttonName', res.payload.username)
       }
       if (res.event === 'AUTH_DONE') {
         this.router.navigateByUrl('/home')
@@ -221,6 +199,32 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (res.event === 'GO_TO_REMOTE_PATH') {
         this._goToRemotePath(res.payload.routerPath)
       }
+      if (res.event === 'ASK_REMOTE_RESOURCE') {
+
+        setTimeout(async () => {
+          const remote = await this.dynamicLoader.loadModule(
+            `${process.env["GUI_WEB_URL"]}/remoteEntry4209.js`, 
+            './Exposed', 
+            'gui'
+          )
+          console.log(remote)
+          const busEvent: BusEvent = {
+            from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
+            to: `${res.from}`,
+            event: 'REMOTE_RESOURCE',
+            payload: {
+              remoteName: res.payload.remoteName,
+              ...remote,
+              isF: remote.getService === 'function',
+              result: remote.getService('service1'),
+              resource: remote.getService
+            },
+          };
+
+          this.eventBusPusher(busEvent);
+        }, 2000)
+      }
+      
     })    
   }
 
@@ -263,7 +267,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private _renderProductNavButton(payloadItem: RegisterComponentsBusEventPayloadItem) {
-    dd(1)
+    // dd(1)
     this.functionQueueService.addToQueue(
       this._appendRemoteButton,
       this,
@@ -323,27 +327,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  // private async _loadRemoteModule(projectId: string): Promise<void> {
-  //   const childRoutes: Routes = [
-  //     {
-  //       path: remotes[projectId as keyof typeof remotes].routerPath,
-  //       loadChildren: () => {
-  //         return loadRemoteModule(remotes[projectId as keyof typeof remotes].remoteModuleScript)
-  //         .then((m) => {
-  //           const remoteModule = m[remotes[projectId as keyof typeof remotes].moduleName!]
-            
-  //           return remoteModule
-  //         })
-  //       },
-  //     },
-  //   ];
-  //   this.router.resetConfig([...this.router.config, ...childRoutes]);
-    
-  //   this._sendRoutePathToRemoteMfe(projectId)
-
-  //   this._renderProductMainButton(projectId)
-  // }
-
+  
   private _goToRemotePath(projectId: string): Promise<boolean> {
     const remoteRootRouterPath = this._remoteConfigService.getRemoteRouterPath(projectId)
     return this.router.navigateByUrl(remoteRootRouterPath)
@@ -391,6 +375,25 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  public onBtnClick(data: any) {
+    if (data.state === 'failed') {
+      this.onReloadRemoteBtn(data.projectId)
+    }
+  }
+
+  public async onReloadRemoteBtn(projectId: string) {
+    this._remoteConfigService.setRemoteConfig(remotes, projectId)
+      .pipe(
+        catchError(err => {
+          throw new Error(err)
+        })
+      )
+      .subscribe(res => {
+        retryRemoteLoad(projectId, this.router, this.productMainButtons, this.dynamicLoader)
+        this._updateProductMainButton(projectId, 'buttonState', 'ready')
+      })
+  }
+
   check() {
     // this.router.navigateByUrl('au')
     const routePathBusEvent: BusEvent = {
@@ -426,14 +429,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadFaq5() {
-    const url = this.router.url
-    this.router.navigateByUrl('/').then(() => {
-      updateRemotes(remotesFaq, this.router, this.productMainButtons)
-        .then(() => {
-          console.log('FINISHED faq5 module load')
-          this.router.navigate([url]);
-        })
-    })
+    // const url = this.router.url
+    // this.router.navigateByUrl('/').then(() => {
+    //   updateRemotes(remotesFaq, this.router, this.productMainButtons)
+    //     .then(() => {
+    //       console.log('FINISHED faq5 module load')
+    //       this.router.navigate([url]);
+    //     })
+    // })
   }
   
   reloadCurrentRoute() { 

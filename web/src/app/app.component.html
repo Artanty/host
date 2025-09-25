@@ -1,7 +1,90 @@
+<!-- <app-web-component-wrapper
+  [componentName]="'user-selector'"
+  [inputs]="{}"
+  [outputs]="{}"
+></app-web-component-wrapper> -->
+
+
+
+<!-- 
+<app-user-avatar-wrapper
+  [remoteEntry]="remoteEntryUrl"
+  [remoteName]="'au'" 
+  [name]="'1John Doe'"
+  [avatarUrl]="'https://example.com/avatar.jpg'"
+  [size]="'lg'">
+</app-user-avatar-wrapper> -->
+
+<!-- <app-user-avatar-wrapper-func
+  [remoteEntry]="remoteEntryUrl"
+  [exposedModule]="'./UserAvatarRemoteFunc'" 
+  [remoteName]="'au'" 
+  [name]="'John Doe'"
+  [avatarUrl]="'https://example.com/avatar.jpg'"
+  [size]="'lg'">
+</app-user-avatar-wrapper-func>
+ -->
+
+<!-- <app-user-avatar-wrapper-module
+  [remoteEntry]="remoteEntryUrl"
+  [exposedModule]="'./UserAvatarModule'" 
+  [remoteName]="'au'" 
+  [name]="'John Doe'"
+  [avatarUrl]="'https://example.com/avatar.jpg'"
+  [size]="'lg'">
+</app-user-avatar-wrapper-module> -->
+
+
+<div class="host-container">
+  <div class="routerDiv">
+    <router-outlet></router-outlet>
+  </div>
+  
+  <div class="navDiv">
+    <div *ngIf="!isHomeRoute()" class="productNavContainer" #productNavContainer appGroupButtons></div>
+  
+    <div class="mainButtons" [class.wide]="isHomeRoute()">
+      @if (productMainButtons.length) {
+        @for (item of productMainButtons; track item) {
+          <app-product-card 
+            [projectId]="item.projectId"
+            [state]="item.buttonState"
+            [ngClass]="item.buttonState"
+            [name]="item.buttonName"
+            [title]="item.buttonTitle"
+            [imgSrcBaseUrl]="item.imgSrcBaseUrl"
+            [routerPath]="item.routerPath"
+            (buttonClick)="onBtnClick($event)"
+          ></app-product-card>
+        }
+      }
+       
+    </div>
+  </div>
+  <div class="bottomButtonsContainer">
+    <div gui type="user_avatar"
+      [inputs]="{}"
+      [outputs]="{}"
+    ></div>
+    <i class="homeBtn mu mu-home" (click)="goHome()"></i>
+  </div> 
+</div>
+<!-- <app-web-component-wrapper
+  [componentName]="'user-avatar'"
+  [inputs]="{
+    name: 'artyom antoshkin',
+    avatarUrl: 'user.avatar'
+  }"
+></app-web-component-wrapper> -->
+<!-- <app-user-avatar [name]="'artyom antoshkin'" [avatarUrl]="'user.avatar'"></app-user-avatar> -->
+
+<app-scaffold></app-scaffold>
+
+
 <div class="scaffold hidde">
-  <a [routerLink]="['/faq/ticket', 1]">{{ 'id 1' }}</a>
+  <a [routerLink]="['/note/keyword-list']">{{ 'key-list' }}</a>
   {{ ' | '}}
-  <a [routerLink]="['/faq/ticket']">{{ 'oldest' }}</a>
+  <a [routerLink]="['/note/keyword-edit']">{{ 'key-edit' }}</a>
   {{ ' | '}}
   <a [routerLink]="['/faq/faq']">{{ 'faq' }}</a>
   {{ ' | '}}
@@ -22,31 +105,4 @@
   <a (click)="loadFaq5()">{{ 'refresh faq module' }}</a>
   {{ ' | '}}
 </div>
-<div class="host-container">
-  <div class="routerDiv">
-    <router-outlet></router-outlet>
-  </div>
-  
-  <div *ngIf="!isHomeRoute()" class="productNavContainer" #productNavContainer appGroupButtons>
-  </div>
-  
-  <div class="mainButtons" [class.wide]="isHomeRoute()">
-    @if (productMainButtons.length) {
-      @for (item of productMainButtons; track item) {
-        <app-product-card 
-          [ngClass]="item.buttonState"
-          [name]="item.buttonName"
-          [title]="item.buttonTitle"
-          [imgSrcBaseUrl]="item.imgSrcBaseUrl"
-          [routerPath]="item.routerPath"
-        ></app-product-card>
-      }
-    }
-    <div class="cont">
-      <i class="homeBtn mu mu-home" (click)="goHome()"></i>
-    </div>  
-  </div>
-</div>
-
-<app-scaffold></app-scaffold>
 

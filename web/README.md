@@ -21,3 +21,13 @@ SET_REMOTES_CONFIGS_DONE
 AUTH_DONE
 хост слушает это событие. по умолчанию после него идет редирект на главную страницу. Это делает хост.
 todo: Ремоуты должны иметь возможность оверрайдить это поведение. Например, ремоут, что отвечает за профиль - может подгрузить последний роут.
+
+
+todo 
+? поменять местами хуки ADD_REMOTES_DONE и SET_REMOTES_CONFIGS_DONE
+чтобы сначала попытаться загрузить файл с урла ремоута и не делать ничего, если не получится.
+
+
+
+https://www.s-ings.com/projects/microns-icon-font/cheat-sheet/
+https://www.s-ings.com/projects/microns-icon-font/

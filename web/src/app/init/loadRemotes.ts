@@ -1,93 +1,153 @@
-import { Route, Router, Routes } from "@angular/router";
-import { ProductButton, RemoteBody, Remotes } from "../app.component.types";
-import { loadRemoteModule } from "@angular-architects/module-federation";
-import { renderProductMainButton } from "./renderAppsButtons";
+import { Route, Router, Routes } from '@angular/router';
 
-/**
- * Происходит на res.event === "ADD_REMOTES"
- * Берется 
- * - конфиг remotes: Remotes с адресами ремоутов, кнопками
- * - роутер для добавления роутов ремоутов
- * - пустой массив кнопок для их добавления
- * */
+import { renderProductMainButton } from './renderAppsButtons';
+import { remotes } from '../app.component.data';
+import { ProductButton, RemoteBody, Remotes } from '../app.component.types';
+import { DynamicLoaderService } from '../services/dynamic-loader.service';
+
+
 export async function loadRemotes(
   remotes: Remotes, 
   router: Router,
   buttonsArr: ProductButton[],
-    
-): Promise<void[]> {
-  const routes: Routes = []
-  Object.entries(remotes).forEach(([projectId, body]: [string, RemoteBody]) => {
-    const route: Route = {
-      path: remotes[projectId as keyof typeof remotes].routerPath,
-      loadChildren: () => {
-        return loadRemoteModule(remotes[projectId as keyof typeof remotes].remoteModuleScript)
-          .then((m) => {
-            const remoteModule = m[remotes[projectId as keyof typeof remotes].moduleName!]
-          
-            return remoteModule
-          }).catch((e) => {
-            console.log('catched')
-            return;
-          })
-      },
-      data: {
-        preload: remotes[projectId as keyof typeof remotes].preload 
+  dynamicLoader: DynamicLoaderService
+): Promise<{ success: boolean; failedRemotes: string[] }> {
+  const routes: Routes = [];
+  const failedRemotes: string[] = [];
+
+  // Load sequentially to avoid conflicts
+  for (const [projectId, remoteConfig] of Object.entries(remotes)) {
+    try {
+      // console.log(`Loading MFE remote: ${projectId}`);
+
+      // Load the MFE module (not Angular module directly)
+      const mfeModule = await dynamicLoader.loadModule(
+        remoteConfig.remoteModuleScript.remoteEntry as string,
+        remoteConfig.remoteModuleScript.exposedModule,
+        remoteConfig.remoteModuleScript.remoteName
+      );
+
+      // The MFE module should expose Angular modules
+      // Check what's available in the MFE module
+      // console.log(`MFE module ${projectId} exports:`, Object.keys(mfeModule));
+
+      // Get the Angular module from the MFE module
+      const angularModule = mfeModule[remoteConfig.moduleName!];
+      if (!angularModule) {
+        throw new Error(`Angular module '${remoteConfig.moduleName}' not found in MFE module`);
       }
+
+      // Verify it's an Angular module
+      if (!angularModule.ɵmod) {
+        throw new Error(`Exported module is not a valid Angular NgModule`);
+      }
+
+      const route: Route = {
+        path: remoteConfig.routerPath,
+        loadChildren: () => Promise.resolve(angularModule),
+        data: { preload: remoteConfig.preload }
+      };
+      
+      routes.push(route);
+      renderProductMainButton(projectId, remotes, buttonsArr, 'initial');
+      
+    } catch (error) {
+      console.error(`Failed to load MFE remote ${projectId}:`, error);
+      failedRemotes.push(projectId);
+      renderProductMainButton(projectId, remotes, buttonsArr, 'failed');
     }
-    routes.push(route)
-    // this._sendRoutePathToRemoteMfe(projectId)
-    renderProductMainButton(projectId, remotes, buttonsArr)
-  })
-  router.resetConfig([...router.config, ...routes]);
+    
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
   
-  return Promise.resolve([])
+  if (routes.length > 0) {
+    router.resetConfig([...router.config, ...routes]);
+  }
+
+  return {
+    success: failedRemotes.length === 0,
+    failedRemotes
+  };
+}
+async function getRemoteConfig(projectId: string): Promise<RemoteBody> {
+  return remotes[projectId];
+}
+export async function retryRemoteLoad(
+  projectId: string, 
+  router: Router, 
+  buttonsArr: any[],
+  dynamicLoader: DynamicLoaderService
+): Promise<void> {
+  try {
+    const remoteConfig = await getRemoteConfig(projectId);
+    
+    // Clear cache before retry
+    dynamicLoader.cleanupFailedRemote(
+      remoteConfig.remoteModuleScript.remoteEntry as string,
+      remoteConfig.moduleName
+    );
+
+    const m = await dynamicLoader.loadModule(
+      remoteConfig.remoteModuleScript.remoteEntry as string,
+      remoteConfig.moduleName!,
+      remoteConfig.remoteModuleScript.remoteName
+    );
+
+    const newRoute: Route = {
+      path: remoteConfig.routerPath,
+      loadChildren: () => Promise.resolve(m),
+      data: { preload: true }
+    };
+    
+    const routes: Route[] = router.config;
+    routes.push(newRoute);
+    router.resetConfig(routes);
+    
+  } catch (error: unknown) {
+    throw new Error(`Retry failed for ${projectId}: ${error}`);
+  }
 }
 
-export async function updateRemotes(
+export async function updateRemote(
+  projectId: string,
   remotes: Remotes, 
   router: Router,
   buttonsArr: ProductButton[],
-): Promise<void[]> {
-  // const routes: Routes = []
-  // Object.entries(remotes).forEach(([projectId, body]: [string, RemoteBody]) => {
-    
-  // })
-  // router.resetConfig([...router.config, ...routes]);
-
-  const projectId = 'faq'
-  const newRoute: Route = {
-    path: remotes[projectId as keyof typeof remotes].routerPath,
-    loadChildren: () => {
-      return loadRemoteModule(remotes[projectId as keyof typeof remotes].remoteModuleScript)
-        .then((m) => {
-          const remoteModule = m[remotes[projectId as keyof typeof remotes].moduleName!]
-        
-          return remoteModule
-        })
-    },
-    data: { 
-      preload: remotes[projectId as keyof typeof remotes].routerPath === 'au' 
-    }
-  }
-  const currentConfig = router.config;
-
-  const updatedConfig = currentConfig.map(route => 
-    route.path === 'faq' ? newRoute : route
+  dynamicLoader: DynamicLoaderService
+): Promise<boolean> {
+  const remoteConfig = remotes[projectId];
+  
+  // Clear the cached module
+  dynamicLoader.cleanupFailedRemote(
+    remoteConfig.remoteModuleScript.remoteEntry as string,
+    remoteConfig.moduleName
   );
-  router.resetConfig(updatedConfig);
 
-  if ((window as any).webpackChunkfaq) {
-    (window as any).webpackChunkfaq = undefined
-    delete (window as any).webpackChunkfaq
+  try {
+    // Reload the module
+    const m = await dynamicLoader.loadModule(
+      remoteConfig.remoteModuleScript.remoteEntry as string,
+      remoteConfig.moduleName!,
+      remoteConfig.remoteModuleScript.remoteName
+    );
+
+    const newRoute: Route = {
+      path: remoteConfig.routerPath,
+      loadChildren: () => Promise.resolve(m),
+      data: { preload: true }
+    };
+
+    const currentConfig = router.config;
+    const updatedConfig = currentConfig.map(route => 
+      route.path === remoteConfig.routerPath ? newRoute : route
+    );
+    
+    router.resetConfig(updatedConfig);
+    renderProductMainButton(projectId, remotes, buttonsArr, 'initial');
+    
+    return true;
+  } catch (error) {
+    console.error(`Failed to update remote ${projectId}:`, error);
+    return false;
   }
-  if ((window as any).window.faq) {
-    (window as any).window.faq = undefined
-  }
-
-  // this._sendRoutePathToRemoteMfe(projectId)
-  renderProductMainButton(projectId, remotes, buttonsArr)
-
-  return Promise.resolve([])
 }
-

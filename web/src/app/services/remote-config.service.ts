@@ -34,7 +34,7 @@ export class RemoteConfigService {
 
         this._remoteConfigs = remotes;
         const arrOfObs$ = Object.keys(remotes)
-            .map(projectId => this._setRemoteConfig(remotes, projectId))
+            .map(projectId => this.setRemoteConfig(remotes, projectId))
         
         return firstValueFrom(forkJoin(arrOfObs$))
     }
@@ -43,7 +43,7 @@ export class RemoteConfigService {
         return this._remoteConfigs[remoteId].routerPath
     }
 
-    private _setRemoteConfig(remotes: Remotes, projectId: string): Observable<any> {
+    public setRemoteConfig(remotes: Remotes, projectId: string): Observable<any> {
         return this._loadRemoteConfig(remotes, projectId)
             .pipe(
                 switchMap((res: any) => {
@@ -65,7 +65,10 @@ export class RemoteConfigService {
                     }
                     return of(`${projectId}'s switchMap returns this to trigger forkJoin`)
                 }),
-            
+                catchError(err => {
+                    return of(`Error: ${projectId}'s err: ${err.message}`)
+                    // throw new Error(`[${projectId.toUpperCase()}]: ${err.message}`)
+                })
             )
     }
 
@@ -108,7 +111,7 @@ export class RemoteConfigService {
                     from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
                     to: `${projectId}@web`,
                     event: push.type,
-                    payload: { action: push.action },
+                    payload: { action: push.action, payload: push.payload },
                 };
                 break;
             case 'ANSWER': 
@@ -137,7 +140,11 @@ export class RemoteConfigService {
         return this.http.get(`${remotes[projectId].url}/assets/configs/remote.json`)
             .pipe(
                 // tap(res => dd(res)),
-                catchError(() => of(`${projectId}'s http catchError returns this to trigger forkJoin`)) 
+                catchError((err: any) => {
+                    console.log(err)
+                    return of(`${projectId}'s http catchError returns this to trigger forkJoin`)
+                    //todo interceptors check on refresh remote
+                }) 
             );
     }   
 }
