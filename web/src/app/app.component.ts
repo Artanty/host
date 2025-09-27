@@ -200,6 +200,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this._goToRemotePath(res.payload.routerPath)
       }
       if (res.event === 'ASK_REMOTE_RESOURCE') {
+        const remoteName = res.payload.remoteName
+        const resourceName = res.payload.resourceName
+        const busEventId = res.payload.busEventId
 
         setTimeout(async () => {
           const remote = await this.dynamicLoader.loadModule(
@@ -207,22 +210,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             './Exposed', 
             'gui'
           )
-          console.log(remote)
+          // console.log(remote)
           const busEvent: BusEvent = {
             from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
             to: `${res.from}`,
             event: 'REMOTE_RESOURCE',
             payload: {
-              remoteName: res.payload.remoteName,
-              ...remote,
-              isF: remote.getService === 'function',
-              result: remote.getService('service1'),
-              resource: remote.getService
+              remoteName: remoteName,
+              resource: remote[resourceName],
+              busEventId: busEventId
             },
           };
 
           this.eventBusPusher(busEvent);
-        }, 2000)
+        }, 0)
       }
       
     })    
