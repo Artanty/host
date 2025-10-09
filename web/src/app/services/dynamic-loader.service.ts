@@ -109,7 +109,6 @@ export class DynamicLoaderService {
   }
 
   private async loadRemoteEntry(remoteEntry: string, remoteName: string): Promise<void> {
-    console.log('!!! remoteName: ' + remoteName)
     if (this.loadedRemotes.has(remoteEntry)) {
       return;
     }

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BusEvent, EVENT_BUS, EVENT_BUS_LISTENER } from 'typlib';
 
@@ -15,7 +15,8 @@ import { BusEvent, EVENT_BUS, EVENT_BUS_LISTENER } from 'typlib';
       },
       deps: [EVENT_BUS],
     },
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 }) 
 export class ScaffoldComponent {
 
