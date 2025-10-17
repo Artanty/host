@@ -31,11 +31,6 @@ export class WebComponentWrapperComponent implements AfterViewInit, OnChanges, O
   private element: HTMLElement | null = null;
   private inputSubscriptions: Map<string, Subscription> = new Map();
 
-  constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
-    private injector: Injector
-  ) {}
-
   ngAfterViewInit() {
     // console.log('componentName: ' + this.componentName)
     this.renderComponent();
