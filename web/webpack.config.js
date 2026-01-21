@@ -36,11 +36,11 @@ module.exports = {
         
       },
       shared: share({
-        "@angular/core": { singleton: true, strictVersion: true, requiredVersion: '17.0.5', eager: true  },
-        "@angular/common": { singleton: true, strictVersion: true, requiredVersion: '17.0.5', eager: true  },
-        // "@angular/common/http": { singleton: true, strictVersion: true, requiredVersion: 'auto', eager: true  },
-        "@angular/router": { singleton: true, strictVersion: true, requiredVersion: '17.0.5', eager: true  },
-        "typlib": { singleton: true, strictVersion: true, requiredVersion: 'auto', eager: true  },
+        "@angular/core": { singleton: true, strictVersion: true, requiredVersion: '17.0.5', eager: true },
+        "@angular/common": { singleton: true, strictVersion: true, requiredVersion: '17.0.5', eager: true },
+        // "@angular/common/http": { singleton: true, strictVersion: true, requiredVersion: '17.0.5', eager: true },
+        "@angular/router": { singleton: true, strictVersion: true, requiredVersion: '17.0.5', eager: true },
+        "typlib": { singleton: true, strictVersion: true, requiredVersion: 'auto', eager: true },
         ...sharedMappings.getDescriptors()
       })
     }),

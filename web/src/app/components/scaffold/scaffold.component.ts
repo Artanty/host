@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, filter, Observable } from 'rxjs';
 import { BusEvent, EVENT_BUS, EVENT_BUS_LISTENER } from 'typlib';
+import { filterOutSseEvents } from '../../utilites/filterOutSseEvents';
 
 @Component({
   selector: 'app-scaffold',
@@ -29,7 +30,9 @@ export class ScaffoldComponent {
     /**
      * Если поместить в OnInit - теряется порядок
      */
-    this.eventBusListener$.subscribe(res => {
+    this.eventBusListener$.pipe(
+      filter(filterOutSseEvents)
+    ).subscribe(res => {
       this.items$.next([res, ...this.items$.getValue()])
     })
   }

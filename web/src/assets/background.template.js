@@ -6,11 +6,11 @@ const SLAVE_REPO = 'SLAVE_REPO_PLACEHOLDER'
 const COMMIT = 'COMMIT_PLACEHOLDER'
 let count = 0
 
-chrome.alarms.create('openPopup', { periodInMinutes: 1 });
+chrome?.alarms.create('openPopup', { periodInMinutes: 1 });
 
-chrome.alarms.create('sendStat', { periodInMinutes: 30 });
+chrome?.alarms.create('sendStat', { periodInMinutes: 30 });
 
-chrome.alarms.onAlarm.addListener( async (alarm) => {
+chrome?.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'openPopup') {
     const popupIsOpen = await isPopupOpen();
     if (popupIsOpen) {
@@ -31,7 +31,7 @@ chrome.alarms.onAlarm.addListener( async (alarm) => {
   }
 });
 
-async function askToOpen () {
+async function askToOpen() {
   fetch(`${FAQ_BACK_URL}/tickets/isTicketsToAnswer`, {
     method: 'POST',
     headers: {

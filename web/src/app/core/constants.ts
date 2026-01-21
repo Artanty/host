@@ -1,0 +1,1 @@
+export const UNSHARABLE_REMOTES_IDS = ['gui', 'tik'];

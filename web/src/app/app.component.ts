@@ -25,6 +25,7 @@ import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy";
 import { loadRemotes, retryRemoteLoad } from "./init/loadRemotes";
 import { dd } from "./utilites/dd";
 import { DynamicLoaderService } from "./services/dynamic-loader.service";
+import { UNSHARABLE_REMOTES_IDS } from "./core/constants";
 
 
 @Component({
@@ -230,7 +231,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private _sendProjectsIds(res: BusEvent) {
-    const remotesIds: string[] = Object.keys(remotes).filter(el => el !== 'gui') // todo
+    // const remotesIds: string[] = Object.keys(remotes).filter(el => el !== 'gui') // todo
+    const remotesIds: string[] = Object.keys(remotes).filter(el => !UNSHARABLE_REMOTES_IDS.includes(el))
+    
     const busEvent: BusEvent = {
       from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
       to: res.from,
@@ -239,6 +242,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.eventBusPusher(busEvent)
   }
+  
   private _updateProductMainButton(projectId: string, prop: keyof ProductButton, state: string) {
     const found = this.productMainButtons.find(el => el.projectId === projectId)
     if (found) {

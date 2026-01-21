@@ -19,6 +19,19 @@ export const remotes: Remotes = {
     routerPath: "gui",
     moduleName: "GuiModule",
   },
+  tik: {
+    preload: true,
+    url: `${process.env["TIK_WEB_URL"]}`,
+    buttonName: 'tik',
+    buttonTitle: 'SSE',
+    remoteModuleScript: {
+      remoteName: "tik",
+      remoteEntry: `${process.env["TIK_WEB_URL"]}/remoteEntry4219.js`,
+      exposedModule: "./TikModule",
+    },
+    routerPath: "tik",
+    moduleName: "TikModule",
+  },
   au: {
     preload: true,
     url: `${process.env["AU_WEB_URL"]}`,
@@ -60,20 +73,20 @@ export const remotes: Remotes = {
   //   routerPath: "faq",
   //   moduleName: "FaqModule"
   // },
-  // doro: {
-  //   preload: false,
-  //   // preload: true,
-  //   url: `${process.env["DORO_WEB_URL"]}`,
-  //   buttonName: 'doro', // 토마토
-  //   buttonTitle: 'Помидор',
-  //   remoteModuleScript: {
-  //     remoteName: "doro",
-  //     remoteEntry: `${process.env["DORO_WEB_URL"]}/remoteEntry3.js`,
-  //     exposedModule: "./DoroModule",
-  //   },
-  //   routerPath: "doro",
-  //   moduleName: "DoroModule"
-  // },
+  doro: {
+    preload: false,
+    // preload: true,
+    url: `${process.env["DORO_WEB_URL"]}`,
+    buttonName: 'doro', // 토마토
+    buttonTitle: 'Помидор',
+    remoteModuleScript: {
+      remoteName: "doro",
+      remoteEntry: `${process.env["DORO_WEB_URL"]}/remoteEntry3.js`,
+      exposedModule: "./DoroModule",
+    },
+    routerPath: "doro",
+    moduleName: "DoroModule"
+  },
 
   // test: {
   // preload: false,

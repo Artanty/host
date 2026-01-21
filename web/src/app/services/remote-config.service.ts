@@ -49,7 +49,7 @@ export class RemoteConfigService {
                 switchMap((res: any) => {
                     if (res['event_bus_hooks'] && Array.isArray(res['event_bus_hooks']) && res['event_bus_hooks'].length) {
                         res['event_bus_hooks'].forEach((el: any) => {
-                            // dd(el)
+                            
                             this._createEventHook(
                                 projectId, 
                                 el.on, 
@@ -59,8 +59,9 @@ export class RemoteConfigService {
                         })
                     }
                     if (res['interceptors'] && Array.isArray(res['interceptors']) && res['interceptors'].length) {
-                        res['interceptors'].forEach(interceptorConfig => {
-                            this._registerInterceptor(projectId, interceptorConfig);    
+                        res['interceptors'].forEach((interceptorConfig, i) => {
+                            // инкремент - чтобы не перезаписвались.
+                            this._registerInterceptor(`${projectId}__${i}`, interceptorConfig);
                         })
                     }
                     return of(`${projectId}'s switchMap returns this to trigger forkJoin`)
@@ -102,10 +103,11 @@ export class RemoteConfigService {
             this._pushBusEvent(projectId, push, res)
         })
     }
-
+    //    todo rename PushEvent.type => PushEvent.event ?
     private _pushBusEvent(projectId: string, push: PushEvent, on: BusEvent): void {
         let busEvent: BusEvent
         switch (push.type) {
+            // todo: кажется в remote.interceptor более удачная реализация
             case 'TRIGGER_ACTION':
                 busEvent = {
                     from: `${process.env['PROJECT_ID']}@${process.env['NAMESPACE']}`,
@@ -124,9 +126,7 @@ export class RemoteConfigService {
                 break;
             default:
                 throw new Error('UNKNOWN EVENT')
-        }
-      
-        
+        } 
         this.eventBusPusher(busEvent)
     }
 
@@ -136,12 +136,11 @@ export class RemoteConfigService {
      * @param projectId 
      * @returns 
      */
-    private _loadRemoteConfig(remotes: Remotes, projectId: string): Observable<any> {
+    private _loadRemoteConfig(remotes: Remotes, projectId: string) {
         return this.http.get(`${remotes[projectId].url}/assets/configs/remote.json`)
             .pipe(
-                // tap(res => dd(res)),
                 catchError((err: any) => {
-                    console.log(err)
+                    console.error(err)
                     return of(`${projectId}'s http catchError returns this to trigger forkJoin`)
                     //todo interceptors check on refresh remote
                 }) 

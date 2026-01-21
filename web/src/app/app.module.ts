@@ -1,5 +1,5 @@
-import { HttpClientModule, provideHttpClient, withInterceptors } from "@angular/common/http"
-import { APP_INITIALIZER, Inject, NgModule } from "@angular/core"
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule, provideHttpClient, withInterceptors, withInterceptorsFromDi } from "@angular/common/http"
+import { APP_INITIALIZER, Inject, Injector, NgModule } from "@angular/core"
 import { ReactiveFormsModule } from "@angular/forms"
 import { BrowserModule } from "@angular/platform-browser"
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations"
@@ -15,13 +15,15 @@ import { ProductCardComponent } from './components/product-card/product-card.com
 import { BusEventStoreService } from "./services/bus-event-store.service"
 import { ScaffoldComponent } from './components/scaffold/scaffold.component';
 import { CustomPreloadingStrategy } from "./core/custom-preloading-strategy"
-import { remoteInterceptor } from "./interceptors/remote.interceptor"
+
 import { GuiDirective } from "./components/_remotes/web-component-wrapper/gui.directive"
 import { WebComponentWrapperComponent } from "./components/_remotes/web-component-wrapper/web-component-wrapper"
 import { UserAvatarWrapperComponent } from "./components/_remotes/user-avatar-wrapper.component"
 import { UserAvatarWrapperFuncComponent } from "./components/_remotes/user-avatar-wrapper-func.component"
 import { UserAvatarWrapperModuleComponent } from "./components/_remotes/user-avatar-wrapper-module.component"
 import { RouteTrackerService } from "./services/route-tracker.service"
+import { RemoteInterceptor } from "./interceptors/remote.interceptor"
+import { remoteInterceptor } from "./interceptors/remote.interceptor-func"
 
 export function setupRouteTracker(routeTracker: RouteTrackerService) {
   return () => routeTracker.init();
@@ -91,9 +93,25 @@ export const eventBus$ = new BehaviorSubject(initBusEvent)
       useValue: {},
       multi: true,
     },
+    // provideHttpClient(
+    //   withInterceptors([remoteInterceptor])
+    // ),
     provideHttpClient(
-      withInterceptors([remoteInterceptor])
+      withInterceptorsFromDi(), // Enable DI-based interceptors
+      // withInterceptors([remoteInterceptor])
     ),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RemoteInterceptor,
+      multi: true
+    },
+    // {
+    //   provide: 'ROOT_HTTP_CLIENT',
+    //   useFactory: (injector: Injector) => {
+    //     return injector.get(HttpClient);
+    //   },
+    //   deps: [Injector]
+    // },
     {
       provide: APP_INITIALIZER,
       useFactory: setupRouteTracker,

@@ -83,13 +83,24 @@ export interface InterceptorConfigModification {
   key: string;
   valueHandler: ModValueHandler
 }
+
+/**
+ * todo: накопить больше кейсов и сделать единую структуру
+ * */
 export interface InterceptorConfig {
-  on: "REQUEST" | "ERROR",
+  on: "REQUEST" | "RESPONSE" | "ERROR",
   url_pattern?: string, // todo
   data?: InterceptorConfigModification[]; // todo
   trigger?: number // todo
   action?: string // todo
   project_id?: string // todo
+  push?: {
+    type: string,
+    action: string,
+    payload?: any,
+    include_request?: boolean,
+    include_response?: boolean,
+  }
 }
 export interface EventHookConfig {
   on: { event: string }
