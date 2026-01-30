@@ -97,6 +97,7 @@ export interface InterceptorConfig {
   push?: {
     type: string,
     action: string,
+    static_payload?: any,
     payload?: any,
     include_request?: boolean,
     include_response?: boolean,

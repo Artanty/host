@@ -64,7 +64,8 @@ export class RemoteInterceptor implements HttpInterceptor {
     return next.handle(modifiedReq).pipe(
       tap((res: any) => {
         if (res instanceof HttpResponse) {
-          const responseConfigs: InterceptorConfig[] = interceptorConfigs.filter(el => this._isResponseConfig(req, el));
+          const responseConfigs: InterceptorConfig[] = interceptorConfigs
+            .filter(el => this._isResponseConfig(req, el));
 
           if (responseConfigs.length) {
             responseConfigs.forEach(config => {
@@ -72,8 +73,8 @@ export class RemoteInterceptor implements HttpInterceptor {
                 if (config.push.type === 'TRIGGER_ACTION') {
                   if (config.push.action) {
                     let payload = {};
-                    if (config.push.payload) {
-                      payload = config.push.payload
+                    if (config.push.static_payload) {
+                      payload = config.push.static_payload
                     }
                     if (config.push.include_request) {
                       // dd(req)
@@ -82,7 +83,9 @@ export class RemoteInterceptor implements HttpInterceptor {
                         ...payload,
                         request: {
                           url: req.url,
-                          payload: (req.method === 'POST') ? req.body : 'not post method'
+                          payload: (req.method === 'POST') 
+                            ? req.body 
+                            : 'not post method'
                         }
                       }
                     }
