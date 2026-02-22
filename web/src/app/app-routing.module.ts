@@ -44,8 +44,10 @@ const routes: Routes = [
     routes, 
     { 
       preloadingStrategy: CustomPreloadingStrategy,
-    }
+      bindToComponentInputs: true,
+    },
+
   )],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
