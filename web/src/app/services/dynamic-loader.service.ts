@@ -20,22 +20,15 @@ export class DynamicLoaderService {
     }
     return false
   }
+
   async loadModule(remoteEntry: string, exposedModule: string, remoteName: string): Promise<any> {
     const cacheKey = `${remoteEntry}-${exposedModule}`;
-    
     if (this.loadedMfeModules.has(cacheKey)) {
       return this.loadedMfeModules.get(cacheKey);
     }
 
     try {
-      // console.log('Loading MFE module:', { remoteEntry, remoteName, exposedModule });
-      // Store original public path
-      const originalPublicPath = (window as any).__webpack_require__?.p;
-      
-      // Set correct public path for this remote
-      this.setWebpackPublicPath(remoteEntry);
-
-      // Load the remote entry
+      // Load the remote entry script
       await this.loadRemoteEntry(remoteEntry, remoteName);
 
       const container = (window as any)[remoteName];
@@ -43,30 +36,18 @@ export class DynamicLoaderService {
         throw new Error(`Remote container '${remoteName}' not found`);
       }
 
-      // Initialize sharing if needed
+      // Initialize sharing
       await this.initializeContainer(container, remoteName);
 
-      // Get the MFE module factory
+      // Get the module factory
       const factory = await container.get(exposedModule);
-      if (!factory) {
-        throw new Error(`MFE module '${exposedModule}' not found in container`);
-      }
-
-      // Execute the factory to get the MFE module
       const mfeModule = factory();
-      
-      // console.log('MFE module loaded successfully:', mfeModule);
-      
+
       this.loadedMfeModules.set(cacheKey, mfeModule);
+      this.loadedMfeModulesByName.set(remoteName, mfeModule);
 
-      this.loadedMfeModulesByName.set(remoteName, mfeModule)
-      
-      // Restore original public path
-      this.restoreWebpackPublicPath(originalPublicPath);
-      
       return mfeModule;
-
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to load MFE module:', error);
       this.cleanupFailedRemote(remoteEntry, remoteName);
       throw error;
