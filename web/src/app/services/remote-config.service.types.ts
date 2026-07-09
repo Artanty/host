@@ -25,6 +25,7 @@ interface EventBusHook {
     type: 'ANSWER' | 'TRIGGER_ACTION' | 'EMIT_EVENT' | 'CALL_API';
     action?: string; // Required for TRIGGER_ACTION
     payload?: Record<string, any>; // Flexible payload structure
+    waitFor?: { event: string; conditions?: Record<string, any> };
   };
   lives: any; //number | 'once' | 'infinite';
   project_id?: string; // Optional project identifier

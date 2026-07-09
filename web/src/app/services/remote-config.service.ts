@@ -1,6 +1,6 @@
 import { HttpClient, HttpInterceptorFn } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
-import { catchError, concatMap, EMPTY, filter, finalize, firstValueFrom, forkJoin, Observable, of, switchMap, take, tap } from "rxjs";
+import { catchError, combineLatest, concatMap, EMPTY, filter, finalize, firstValueFrom, forkJoin, map, Observable, of, shareReplay, switchMap, take, tap } from "rxjs";
 import { InterceptorConfig, InterceptorConfigModification, RemoteBody, Remotes } from "../app.component.types";
 import { EVENT_BUS_LISTENER, BusEvent, EVENT_BUS, EVENT_BUS_PUSHER } from "typlib";
 import { dd } from "../utilites/dd";
@@ -9,7 +9,8 @@ export interface PushEvent {
     type: string,
     event?: string,
     action?: string,
-    payload?: any
+    payload?: any,
+    waitFor?: { event: string; conditions?: Record<string, any> }
 }
 @Injectable({
     providedIn: 'root'
@@ -87,13 +88,31 @@ export class RemoteConfigService {
         let obs$ = this.eventBusListener$
             .pipe(
                 filter((res: BusEvent) => {
-                    if (on.event) {
-                        const eventCondition = (res: BusEvent) => res.event === on.event
-                        return eventCondition(res)
-                    }
-                    return false
+                    if (!on.event) return false
+                    const eventMatch = res.event === on.event
+                    const conditionsMatch = !on.conditions || 
+                        Object.entries(on.conditions).every(([k, v]) => res.payload?.[k] === v)
+                    return eventMatch && conditionsMatch
                 })
             )
+
+        const prereqMet$ = this.eventBusListener$.pipe(
+            filter(res => {
+                if (!push.waitFor) return true
+                const eventMatch = res.event === push.waitFor.event
+                const conditionsMatch = !push.waitFor.conditions ||
+                    Object.entries(push.waitFor.conditions).every(([k, v]) => res.payload?.[k] === v)
+                return eventMatch && conditionsMatch
+            }),
+            map(() => true),
+            take(1),
+            shareReplay(1)
+        )
+
+        obs$ = combineLatest([obs$, prereqMet$]).pipe(
+            filter(([_, prereqMet]) => prereqMet),
+            map(([trigger, _]) => trigger)
+        )
 
         if (lives === 'once') {
             obs$ = obs$.pipe(take(1))
